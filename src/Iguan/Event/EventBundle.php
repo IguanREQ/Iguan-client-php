@@ -15,6 +15,12 @@ use Iguan\Common\ImmutableException;
 class EventBundle
 {
     /**
+     * @var string|number an event source identifier
+     */
+    private $sourceId;
+
+
+    /**
      * @var string an event source class
      */
     private $class;
@@ -41,6 +47,26 @@ class EventBundle
      */
     public function lock() {
         $this->immutableLock = true;
+    }
+
+    /**
+     * @return number|string a bundle stored source id
+     */
+    public function getSourceId()
+    {
+        return $this->sourceId;
+    }
+
+    /**
+     * Set event source id to bundle.
+     * If bundle is locked - it will raise
+     * a @see ImmutableException
+     *
+     * @param number|string $source_id
+     */
+    public function setSourceId($source_id)
+    {
+        $this->sourceId = $source_id;
     }
 
     /**
@@ -105,6 +131,18 @@ class EventBundle
     {
         $this->checkImmutable();
         $this->payload = $payload;
+    }
+
+    /**
+     * @return array of private object fields
+     */
+    public function asArray() {
+        return [
+          'class' => $this->class,
+          'token' => $this->token,
+          'payload' => $this->payload,
+          'sourceId' => $this->sourceId,
+        ];
     }
 
     /**

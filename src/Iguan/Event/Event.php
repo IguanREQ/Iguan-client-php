@@ -71,6 +71,22 @@ class Event
     }
 
     /**
+     * Set source application or domain name identifier.
+     *
+     * @param string $source_id
+     */
+    public function setSourceId($source_id) {
+        $this->bundle->setSourceId($source_id);
+    }
+
+    /**
+     * @return number|string event source identifier
+     */
+    public function getSourceId() {
+        return $this->bundle->getSourceId();
+    }
+
+    /**
      * Set token to current event.
      * @param string $key
      * A token - is a string, that describe event.
@@ -143,12 +159,14 @@ class Event
      *
      * @param string $token event token
      * @param mixed $payload event payload data
+     * @param string $sourceId event source identifier
      * @return Event initialized event object that ready to send
      */
-    public static function create($token, $payload) {
+    public static function create($token, $payload, $sourceId = '') {
         $bundle = new EventBundle();
         $bundle->setToken($token);
         $bundle->setPayload($payload);
+        $bundle->setSourceId($sourceId);
         return new static($bundle);
     }
 }
