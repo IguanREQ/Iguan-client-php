@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 01.11.2017
- * Time: 0:31
- */
 
-namespace Internal\Util\Encoder;
+namespace Iguan\Common\Encoder;
 
 /**
  * Class Base64Encoder

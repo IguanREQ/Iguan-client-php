@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 22.10.2017
- * Time: 1:06
- */
 
-namespace Internal\Util\Encoder;
+
+namespace Iguan\Common\Encoder;
 
 /**
  * Class JsonDataDecoder

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 12.11.2017
- * Time: 18:30
- */
 
 namespace Iguan\Event\Dispatcher;
 

@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 22.10.2017
- * Time: 1:05
- */
 
-namespace Internal\Util\Encoder;
-use Exception;
+namespace Iguan\Common\Encoder;
 
 /**
  * Class DataDecoder

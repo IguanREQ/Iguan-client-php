@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 12.11.2017
- * Time: 14:58
- */
 
 namespace Iguan\Event\Dispatcher;
-use Internal\Util\Encoder\DataEncoder;
+use Iguan\Common\Encoder\DataEncoder;
 
 /**
  * Class DispatchStrategy
