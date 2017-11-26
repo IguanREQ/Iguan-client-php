@@ -19,7 +19,8 @@ class RemoteSocketClient
     private $socketErrorCode;
     private $socketFlags = STREAM_CLIENT_CONNECT;
 
-    private $timeout = 30;
+    private $timeoutSeconds = 2;
+    private $timeoutMicroseconds = 0;
     private $contextArgs = [];
 
     /**
@@ -82,6 +83,16 @@ class RemoteSocketClient
     public function persist()
     {
         $this->socketFlags |= STREAM_CLIENT_PERSISTENT;
+    }
+
+    /**
+     * @param int $seconds seconds to wait in fwrite and fread calls
+     * @param int $microseconds microseconds to wait in fwrite and fread calls
+     */
+    public function setTimeout($seconds, $microseconds = 0)
+    {
+        $this->timeoutSeconds = $seconds;
+        $this->timeoutMicroseconds = $microseconds;
     }
 
     /**
@@ -150,7 +161,10 @@ class RemoteSocketClient
             $context = $this->overlapContext;
         }
 
-        $socket = stream_socket_client($this->remoteSocket, $this->socketErrorCode, $this->socketError, $this->timeout, $this->socketFlags, $context);
+        $socket = stream_socket_client($this->remoteSocket, $this->socketErrorCode, $this->socketError, $this->timeoutSeconds, $this->socketFlags, $context);
+        stream_set_blocking($socket, true);
+        stream_set_timeout($socket, $this->timeoutSeconds, $this->timeoutMicroseconds);
+
         if ($socket === false) {
             throw new SocketStreamException('Unable to create event socket stream: ' . $this->socketError . ' (' . $this->socketErrorCode . ').');
         }

@@ -149,7 +149,7 @@ class RemoteDispatchStrategy extends DispatchStrategy
     private function readAndCheckAnswer($exceptedId)
     {
         $answer = $this->socket->readChunk();
-        if ($answer === false) throw new EventDispatchException('Cannot read server response. Event server went away.');
+        if (empty($answer)) throw new EventDispatchException('Cannot read server response. Event server went away.');
 
         $decoder = new JsonDataDecoder();
         $answer = $decoder->decode($answer);
@@ -161,7 +161,7 @@ class RemoteDispatchStrategy extends DispatchStrategy
             throw new EventServerException('JSON RPC error: ' . $answer->error);
         }
 
-        return $answer->data;
+        return isset($answer->data) ? $answer->data : [];
     }
 
     /**
