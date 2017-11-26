@@ -4,6 +4,7 @@ namespace Iguan\Event\Dispatcher;
 
 /**
  * Class EventDispatcherBuilder
+ *
  * @author Vishnevskiy Kirill
  */
 class EventDispatcherBuilder

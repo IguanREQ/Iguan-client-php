@@ -11,7 +11,7 @@ abstract class DataEncoder
     /**
      * A method for do a data encode work.
      *
-     * @param $data string a structure need to be encoded
+     * @param $data mixed a structure need to be encoded
      * @throws EncodeDecodeException if there is an errors during encoding
      * @return string an encoded string
      */

@@ -1,7 +1,8 @@
 {
   "autoload": {
     "psr-0": {
-      "Iguan": "src/"
+      "Iguan": "src/",
+      "Test": "tests/"
     }
   },
   "require-dev": {

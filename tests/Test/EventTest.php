@@ -1,5 +1,7 @@
 <?php
 
+namespace Test;
+
 use Iguan\Event\Event;
 use PHPUnit\Framework\TestCase;
 
