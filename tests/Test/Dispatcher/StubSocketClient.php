@@ -8,14 +8,14 @@
 
 namespace Test\Dispatcher;
 
+use Iguan\Common\Remote\SocketClient;
 
-use Iguan\Event\Dispatcher\RemoteSocketClient;
 
 /**
  * Class StubSocketClient
  * @author Vishnevskiy Kirill
  */
-class StubSocketClient extends RemoteSocketClient
+class StubSocketClient extends SocketClient
 {
     private $writtenData;
 

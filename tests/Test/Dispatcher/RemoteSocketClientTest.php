@@ -8,7 +8,7 @@
 
 namespace Test\Test\Dispatcher;
 
-use Iguan\Event\Dispatcher\RemoteSocketClient;
+use Iguan\Common\Remote\SocketClient;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,7 +31,7 @@ class RemoteSocketClientTest extends TestCase
 
     public function testWritingEchoReading()
     {
-        $socketClient = new RemoteSocketClient();
+        $socketClient = new SocketClient();
         $dataLength = 1024 * 1024;
         $data = openssl_random_pseudo_bytes($dataLength);
         $socketClient->write($data);

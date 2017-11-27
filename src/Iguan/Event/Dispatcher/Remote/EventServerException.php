@@ -6,7 +6,9 @@
  * Time: 12:12
  */
 
-namespace Iguan\Event\Dispatcher;
+namespace Iguan\Event\Dispatcher\Remote;
+
+use Iguan\Event\Dispatcher\EventDispatchException;
 
 /**
  * Class EventServerException

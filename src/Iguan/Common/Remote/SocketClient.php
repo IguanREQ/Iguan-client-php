@@ -1,14 +1,14 @@
 <?php
 
-namespace Iguan\Event\Dispatcher;
+namespace Iguan\Common\Remote;
 
 /**
- * Class RemoteSocketClient
+ * Class SocketClient
  * A simple wrapper on PHP socket functions.
  *
  * @author Vishnevskiy Kirill
  */
-class RemoteSocketClient
+class SocketClient
 {
     const DEFAULT_REMOTE_PORT = 16986;
 
@@ -24,7 +24,7 @@ class RemoteSocketClient
     private $contextArgs = [];
 
     /**
-     * RemoteSocketClient constructor.
+     * SocketClient constructor.
      *
      * @param string $remoteSocket a remote socket URI.
      */

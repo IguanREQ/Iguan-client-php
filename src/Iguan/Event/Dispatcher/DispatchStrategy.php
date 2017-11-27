@@ -2,6 +2,8 @@
 
 namespace Iguan\Event\Dispatcher;
 
+use Iguan\Event\Common\CommonAuth;
+
 /**
  * Class DispatchStrategy.
  * A base class for dispatching realizing.
@@ -13,11 +15,7 @@ namespace Iguan\Event\Dispatcher;
  */
 abstract class DispatchStrategy
 {
-    const MAX_AUTH_TOKEN_LENGTH = 255;
-    const MAX_AUTH_TOKEN_NAME_LENGTH = 127;
-
-    private $authToken;
-    private $authTokenName;
+    private $auth;
 
     /**
      * Emit event according to current strategy.
@@ -30,50 +28,20 @@ abstract class DispatchStrategy
     public abstract function emitEvent(EventDescriptor $descriptor);
 
     /**
-     * Set auth token and token name, that will be passed in fire event
+     * Set auth that will be passed in fire event
      * request to recipient.
-     *
-     *
-     * @param string $token must be not longer MAX_AUTH_TOKEN_LENGTH.
-     *               It's like an exactly access token if $tokenName not
-     *               presented. Otherwise, it can be a password part.
-     * @param string $tokenName a token tag. Can be used as login part.
+     * @param CommonAuth $auth for usage
      */
-    public function setAuthToken($token, $tokenName = '')
+    public function setAuth(CommonAuth $auth)
     {
-        if (!is_string($token)) {
-            throw new \InvalidArgumentException('Auth token must be string. ' . gettype($token) . ' given.');
-        }
-
-        if (!is_string($tokenName)) {
-            throw new \InvalidArgumentException('Auth token name must be string. ' . gettype($token) . ' given.');
-        }
-
-        if (strlen($token) > self::MAX_AUTH_TOKEN_LENGTH) {
-            throw new \InvalidArgumentException('Auth token must be <= ' . self::MAX_AUTH_TOKEN_LENGTH . ' bytes. ' . strlen($token) . ' bytes given instead.');
-        }
-
-        if (strlen($tokenName) > self::MAX_AUTH_TOKEN_NAME_LENGTH) {
-            throw new \InvalidArgumentException('Auth token name must be <= ' . self::MAX_AUTH_TOKEN_NAME_LENGTH . ' bytes. ' . strlen($token) . ' bytes given instead.');
-        }
-
-        $this->authToken = $token;
-        $this->authTokenName = $tokenName;
+        $this->auth = $auth;
     }
 
     /**
-     * @return string current token, if presented. Empty string otherwise.
+     * @return CommonAuth composed object based on current state
      */
-    protected function getAuthToken()
+    protected function getAuth()
     {
-        return $this->authToken === null ? '' : $this->authToken;
-    }
-
-    /**
-     * @return string current token name, if presented. Empty string otherwise.
-     */
-    protected function getAuthTokenName()
-    {
-        return $this->authTokenName === null ? '' : $this->authTokenName;
+        return $this->auth;
     }
 }

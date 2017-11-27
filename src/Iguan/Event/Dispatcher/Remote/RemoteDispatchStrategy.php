@@ -1,33 +1,30 @@
 <?php
 
-namespace Iguan\Event\Dispatcher;
+namespace Iguan\Event\Dispatcher\Remote;
 
 use Iguan\Common\Encoder\DataEncoder;
 use Iguan\Common\Encoder\JsonDataDecoder;
 use Iguan\Common\Encoder\JsonDataEncoder;
+use Iguan\Common\Remote\SocketStreamException;
+use Iguan\Event\Common\RemoteClient;
+use Iguan\Event\Dispatcher\DispatchStrategy;
+use Iguan\Event\Dispatcher\EventDescriptor;
+use Iguan\Event\Dispatcher\EventDispatchException;
 
 /**
  * Class RemoteDispatchStrategy
  * A dispatch strategy, when event server is on remote
- * host and can be accessible via socket communication.
+ * host and can be accessible via remote communication
+ * using RemoteClient.
  *
  * @author Vishnevskiy Kirill
  */
 class RemoteDispatchStrategy extends DispatchStrategy
 {
-    //if there is no auth on remote
-    const AUTH_TYPE_NO_AUTH = 0;
-
-    //auth by token (lower bit)
-    const AUTH_TYPE_TOKEN = 1;
-
-    //auth by token name (lower + 1 bit)
-    const AUTH_TYPE_TOKEN_NAME = 2;
-
     /**
-     * @var RemoteSocketClient
+     * @var RemoteClient
      */
-    private $socket;
+    private $dispatchClient;
 
     /**
      * @var DataEncoder
@@ -41,14 +38,20 @@ class RemoteDispatchStrategy extends DispatchStrategy
 
     /**
      * RemoteDispatchStrategy constructor.
+     * @param RemoteClient $dispatchClient initialized remote client,
+     *                                 that provide a way to communicate with
+     *                             remote event server (via raw socket, http, ...)
      * @param DataEncoder $encoder an encoder to encode payload data.
-     *                    Ensure that server are support this encoding method.
-     * @param RemoteSocketClient $socket an initialized remote socket
-     *                           that will use to communicate with remote event server.
+     *                    Ensure, that event server are support passed encoding method.
      */
-    public function __construct(DataEncoder $encoder, RemoteSocketClient $socket)
+    public function __construct(RemoteClient $dispatchClient, DataEncoder $encoder = null)
     {
-        $this->socket = $socket;
+        $this->dispatchClient = $dispatchClient;
+
+        if ($encoder === null) {
+            $encoder = new JsonDataEncoder();
+        }
+
         $this->encoder = $encoder;
     }
 
@@ -71,21 +74,16 @@ class RemoteDispatchStrategy extends DispatchStrategy
         $jsonRpcData = [
             'jsonrpc' => '2.0',
             'method' => 'fireEvent',
-            'id' => $rpcId
+            'id' => $rpcId,
+            'params' => [$this->encoder->encode($descriptor)]
         ];
 
-        //can save a bit performance by using already right encoder
-        if ($this->encoder instanceof JsonDataDecoder) {
-            $jsonRpcData['params'] = [$descriptor];
-            $data = $this->encoder->encode($jsonRpcData);
-        } else {
-            $encodedDescriptor = $this->encoder->encode($descriptor);
-            $jsonRpcData['params'] = [$encodedDescriptor];
-            $data = (new JsonDataEncoder())->encode($jsonRpcData);
-        }
+        $jsonDataEncoder = new JsonDataEncoder();
+        $data = $jsonDataEncoder->encode($jsonRpcData);
+
         try {
-            $message = $this->composePayloadMessage($data);
-            $this->socket->write($message);
+            $auth = $this->getAuth();
+            $this->dispatchClient->write($data, $auth);
         } catch (SocketStreamException $exception) {
             throw new EventDispatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -97,50 +95,6 @@ class RemoteDispatchStrategy extends DispatchStrategy
     }
 
     /**
-     * Create a raw payload message to be written in socket.
-     * By default:
-     * First byte - auth type byte (bit mask of self::AUTH_TYPE_* const)
-     * Next, if has an AUTH_TYPE_TOKEN bit - first byte it's a token size in bytes, next - N bytes of token.
-     * Next, if has an AUTH_TYPE_TOKEN_NAME bit - first byte it's a token name size in bytes, next - N bytes of token name.
-     * Next - payload data.
-     * LF byte at the end required!
-     *
-     * @param string $payloadData a prepared RPC call data.
-     * @return string raw prepared binary string.
-     */
-    protected function composePayloadMessage($payloadData)
-    {
-        $type = self::AUTH_TYPE_NO_AUTH;
-
-        $authToken = $this->getAuthToken();
-        $authTokenLength = strlen($authToken);
-        $isAuthTokenPresent = $authTokenLength !== 0;
-        if ($isAuthTokenPresent) {
-            $type |= self::AUTH_TYPE_TOKEN;
-        }
-
-        $authTokenName = $this->getAuthTokenName();
-        $authTokenNameLength = strlen($authTokenName);
-        $isAuthTokenNamePresent = $authTokenNameLength !== 0;
-        if ($isAuthTokenNamePresent) {
-            $type |= self::AUTH_TYPE_TOKEN_NAME;
-        }
-
-        $authType = pack('C', $type);
-        $message = $authType;
-
-        if ($isAuthTokenPresent) {
-            $message .= pack('C', $authTokenLength) . $authToken;
-        }
-
-        if ($isAuthTokenNamePresent) {
-            $message .= pack('C', $authTokenNameLength) . $authTokenName;
-        }
-
-        return $message . $payloadData . "\n";
-    }
-
-    /**
      * Read message for socket and validate it.
      *
      * @param string $exceptedId an RPC ID, that must be in server reply.
@@ -148,7 +102,7 @@ class RemoteDispatchStrategy extends DispatchStrategy
      */
     private function readAndCheckAnswer($exceptedId)
     {
-        $answer = $this->socket->readChunk();
+        $answer = $this->dispatchClient->read();
         if (empty($answer)) throw new EventDispatchException('Cannot read server response. Event server went away.');
 
         $decoder = new JsonDataDecoder();

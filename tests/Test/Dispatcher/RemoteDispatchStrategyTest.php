@@ -3,11 +3,12 @@
 namespace Test\Dispatcher;
 
 use Iguan\Common\Encoder\JsonDataDecoder;
-use Iguan\Common\Encoder\JsonDataEncoder;
+use Iguan\Common\Remote\SocketClient;
+use Iguan\Event\Common\CommonAuth;
+use Iguan\Event\Common\RemoteSocketClient;
 use Iguan\Event\Dispatcher\EventDescriptor;
 use Iguan\Event\Dispatcher\EventDispatcher;
-use Iguan\Event\Dispatcher\RemoteDispatchStrategy;
-use Iguan\Event\Dispatcher\RemoteSocketClient;
+use Iguan\Event\Dispatcher\Remote\RemoteDispatchStrategy;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,7 +27,7 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new NoDataEncoder(), $socket);
+        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
         $strategy->emitEvent($eventDescriptor);
 
@@ -40,16 +41,16 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new NoDataEncoder(), $socket);
+        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
 
         $token = 'token';
-        $strategy->setAuthToken($token);
+        $strategy->setAuth(new CommonAuth($token));
 
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
 
-        $excepted = pack('C', RemoteDispatchStrategy::AUTH_TYPE_TOKEN) . pack('C', strlen($token)) . $token;
+        $excepted = pack('C', CommonAuth::AUTH_TYPE_TOKEN) . pack('C', strlen($token)) . $token;
         $this->assertEquals($excepted, substr($writtenData, 0, strlen($excepted)));
     }
 
@@ -57,17 +58,17 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new NoDataEncoder(), $socket);
+        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
 
         $token = 'token';
         $tokenName = 'token_name';
-        $strategy->setAuthToken($token, $tokenName);
+        $strategy->setAuth(new CommonAuth($token, $tokenName));
 
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
 
-        $excepted = pack('C', RemoteDispatchStrategy::AUTH_TYPE_TOKEN | RemoteDispatchStrategy::AUTH_TYPE_TOKEN_NAME)
+        $excepted = pack('C', CommonAuth::AUTH_TYPE_TOKEN | CommonAuth::AUTH_TYPE_TOKEN_NAME)
             . pack('C', strlen($token)) . $token
             . pack('C', strlen($tokenName)) . $tokenName;
         $this->assertEquals($excepted, substr($writtenData, 0, strlen($excepted)));
@@ -82,7 +83,7 @@ class RemoteDispatchStrategyTest extends TestCase
         $eventDescriptor->firedAt = 1984;
 
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new JsonDataEncoder(), $socket);
+        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket));
         $strategy->setWaitForAnswer(false);
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
@@ -103,8 +104,8 @@ class RemoteDispatchStrategyTest extends TestCase
         $procHandle = proc_open('php "' . __DIR__ . DIRECTORY_SEPARATOR . 'success_event_server.php" ' . $port . ' ' . self::MODE_ALRIGHT, [], $pipes);
         try {
             $eventDescriptor = new EventDescriptor();
-            $socketClient = new RemoteSocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new JsonDataEncoder(), $socketClient);
+            $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
+            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
             $this->assertTrue(true, 'Wow!');
         } finally {
@@ -122,8 +123,8 @@ class RemoteDispatchStrategyTest extends TestCase
         $procHandle = proc_open('php "' . __DIR__ . DIRECTORY_SEPARATOR . 'success_event_server.php" ' . $port . ' ' . self::MODE_INVALID_ANSWER, [], $pipes);
         try {
             $eventDescriptor = new EventDescriptor();
-            $socketClient = new RemoteSocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new JsonDataEncoder(), $socketClient);
+            $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
+            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
         } finally {
             proc_close($procHandle);
@@ -140,8 +141,8 @@ class RemoteDispatchStrategyTest extends TestCase
         $procHandle = proc_open('php "' . __DIR__ . DIRECTORY_SEPARATOR . 'success_event_server.php" ' . $port . ' ' . self::MODE_NO_ANSWER, [], $pipes);
         try {
             $eventDescriptor = new EventDescriptor();
-            $socketClient = new RemoteSocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new JsonDataEncoder(), $socketClient);
+            $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
+            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
             $socketClient->close();
         } finally {
