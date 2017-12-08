@@ -1,6 +1,6 @@
 <?php
 
-namespace Iguan\Common\Encoder;
+namespace Iguan\Common\Data;
 
 /**
  * Class Base64Exception

@@ -30,6 +30,9 @@ class Event
     private $prevented;
 
 
+    private $descriptor;
+
+
     /**
      * Event constructor.
      *
@@ -68,6 +71,7 @@ class Event
     {
         $this->setPayload($bundle->getPayload());
         $this->setToken($bundle->getToken());
+        $this->setSourceId($bundle->getSourceId());
     }
 
     /**
@@ -168,5 +172,21 @@ class Event
         $bundle->setPayload($payload);
         $bundle->setSourceId($sourceId);
         return new static($bundle);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescriptor()
+    {
+        return $this->descriptor;
+    }
+
+    /**
+     * @param mixed $descriptor
+     */
+    public function setDescriptor($descriptor)
+    {
+        $this->descriptor = $descriptor;
     }
 }

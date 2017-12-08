@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 25.11.2017
- * Time: 12:12
- */
 
-namespace Iguan\Event\Dispatcher\Remote;
+namespace Iguan\Event\Common\Remote;
 
 use Iguan\Event\Dispatcher\EventDispatchException;
 

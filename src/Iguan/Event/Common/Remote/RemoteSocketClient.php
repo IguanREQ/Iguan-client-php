@@ -1,8 +1,9 @@
 <?php
 
-namespace Iguan\Event\Common;
+namespace Iguan\Event\Common\Remote;
 
 use Iguan\Common\Remote\SocketClient;
+use Iguan\Event\Common\CommonAuth;
 
 /**
  * Class RemoteSocketClient

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Iguan\Common\Encoder;
+namespace Iguan\Common\Data;
 
 /**
  * Class JsonDataDecoder

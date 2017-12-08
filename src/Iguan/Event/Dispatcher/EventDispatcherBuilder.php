@@ -2,6 +2,9 @@
 
 namespace Iguan\Event\Dispatcher;
 
+use Iguan\Event\Common\Remote\RemoteCommunicateStrategy;
+use Iguan\Event\Common\Remote\RemoteSocketClient;
+
 /**
  * Class EventDispatcherBuilder
  *
@@ -15,12 +18,12 @@ class EventDispatcherBuilder
 
     public function __construct()
     {
-        $this->strategyClass = RemoteDispatchStrategy::class;
+        $this->strategyClass = RemoteCommunicateStrategy::class;
         $this->dispatcherClass = EventDispatcher::class;
     }
 
     public function setRemoteSocket(RemoteSocketClient $remoteSocket) {
-        $this->strategyClass = RemoteDispatchStrategy::class;
+        $this->strategyClass = RemoteCommunicateStrategy::class;
         $this->strategyArgs = [$remoteSocket];
 
         return $this;

@@ -2,13 +2,13 @@
 
 namespace Test\Dispatcher;
 
-use Iguan\Common\Encoder\JsonDataDecoder;
+use Iguan\Common\Data\JsonDataDecoder;
 use Iguan\Common\Remote\SocketClient;
 use Iguan\Event\Common\CommonAuth;
 use Iguan\Event\Common\RemoteSocketClient;
 use Iguan\Event\Dispatcher\EventDescriptor;
 use Iguan\Event\Dispatcher\EventDispatcher;
-use Iguan\Event\Dispatcher\Remote\RemoteDispatchStrategy;
+use Iguan\Event\Dispatcher\Remote\RemoteCommunicateStrategy;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,7 +27,7 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
+        $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
         $strategy->emitEvent($eventDescriptor);
 
@@ -41,7 +41,7 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
+        $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
 
         $token = 'token';
@@ -58,7 +58,7 @@ class RemoteDispatchStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
+        $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
 
         $token = 'token';
@@ -83,7 +83,7 @@ class RemoteDispatchStrategyTest extends TestCase
         $eventDescriptor->firedAt = 1984;
 
         $socket = new StubSocketClient();
-        $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socket));
+        $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socket));
         $strategy->setWaitForAnswer(false);
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
@@ -105,7 +105,7 @@ class RemoteDispatchStrategyTest extends TestCase
         try {
             $eventDescriptor = new EventDescriptor();
             $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
+            $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
             $this->assertTrue(true, 'Wow!');
         } finally {
@@ -124,7 +124,7 @@ class RemoteDispatchStrategyTest extends TestCase
         try {
             $eventDescriptor = new EventDescriptor();
             $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
+            $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
         } finally {
             proc_close($procHandle);
@@ -142,7 +142,7 @@ class RemoteDispatchStrategyTest extends TestCase
         try {
             $eventDescriptor = new EventDescriptor();
             $socketClient = new SocketClient('tcp://127.0.0.1:' . $port);
-            $strategy = new RemoteDispatchStrategy(new RemoteSocketClient($socketClient));
+            $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socketClient));
             $strategy->emitEvent($eventDescriptor);
             $socketClient->close();
         } finally {

@@ -34,7 +34,7 @@ class CommonAuth
      *               presented. Otherwise, it can be a password part.
      * @param string $tokenName a token tag. Can be used as login part.
      */
-    public function __construct($token, $tokenName = '')
+    public function __construct($token = '', $tokenName = '')
     {
         if (!is_string($token)) {
             throw new \InvalidArgumentException('Auth token must be string. ' . gettype($token) . ' given.');
@@ -107,5 +107,13 @@ class CommonAuth
     public function getTokenName()
     {
         return $this->tokenName;
+    }
+
+    public function equals(CommonAuth $that)
+    {
+        return
+            $this->type === $that->type &&
+            $this->token === $that->token &&
+            $this->tokenName === $that->tokenName;
     }
 }

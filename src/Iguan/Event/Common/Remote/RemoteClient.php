@@ -1,6 +1,8 @@
 <?php
 
-namespace Iguan\Event\Common;
+namespace Iguan\Event\Common\Remote;
+
+use Iguan\Event\Common\CommonAuth;
 
 /**
  * Class RemoteClient

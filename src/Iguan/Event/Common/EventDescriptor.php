@@ -1,6 +1,8 @@
 <?php
 
-namespace Iguan\Event\Dispatcher;
+namespace Iguan\Event\Common;
+
+use Iguan\Event\Event;
 
 /**
  * Class EventDescriptor
@@ -24,4 +26,10 @@ class EventDescriptor
 
     /** @var string a dispatcher language identifier */
     public $dispatcher;
+
+    /** @var string */
+    public $raisedSubjectToken;
+
+    /** @var Event */
+    public $raisedEvent;
 }

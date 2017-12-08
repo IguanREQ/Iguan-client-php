@@ -8,6 +8,8 @@
 
 namespace Iguan\Event\Dispatcher;
 
+use Iguan\Event\Common\CommunicateStrategy;
+use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Event;
 
 /**
@@ -25,17 +27,17 @@ class EventDispatcher
     const DISPATCHER_PHP = 1;
 
     /**
-     * @var DispatchStrategy
+     * @var CommunicateStrategy
      */
     private $strategy;
 
     /**
      * EventDispatcher constructor.
      *
-     * @param DispatchStrategy $strategy define current dispatcher
+     * @param CommunicateStrategy $strategy define current dispatcher
      *                         a way to emit events.
      */
-    public function __construct(DispatchStrategy $strategy)
+    public function __construct(CommunicateStrategy $strategy)
     {
         $this->strategy = $strategy;
     }
