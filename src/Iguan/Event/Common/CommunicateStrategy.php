@@ -37,15 +37,19 @@ abstract class CommunicateStrategy
      *
      * @param Subject $subject to register
      */
-    public abstract function register(Subject $subject);
+    public abstract function register(Subject $subject, $sourceTag);
 
     /**
      * Cancel registration for passed subject.
      * This subject will never receive any invokes.
      *
      * @param Subject $subject to unsubscribe
+     * @param $sourceTag
+     * @return
      */
-    public abstract function unRegister(Subject $subject);
+    public abstract function unRegister(Subject $subject, $sourceTag);
+
+    public abstract function unRegisterAll($sourceTag);
 
     public abstract function subscribe(Subject $subject);
 

@@ -11,6 +11,8 @@ use Iguan\Event\Event;
  */
 class EventDescriptor
 {
+    public $sourceTag;
+
     /** @var array an event bundle packed into array */
     public $event;
 
@@ -26,9 +28,6 @@ class EventDescriptor
 
     /** @var string a dispatcher language identifier */
     public $dispatcher;
-
-    /** @var string */
-    public $raisedSubjectToken;
 
     /** @var Event */
     public $raisedEvent;

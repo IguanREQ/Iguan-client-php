@@ -14,10 +14,12 @@ class EventSubscriber
     private $strategy;
 
     private $isNeedToRegisterOnSubscribe = true;
+    private $sourceTag;
 
-    public function __construct(CommunicateStrategy $strategy)
+    public function __construct($sourceTag, CommunicateStrategy $strategy)
     {
         $this->strategy = $strategy;
+        $this->sourceTag = $sourceTag;
     }
 
     /**
@@ -42,6 +44,16 @@ class EventSubscriber
 
     public function register(Subject $subject)
     {
-        $this->strategy->register($subject);
+        $this->strategy->register($subject, $this->sourceTag);
+    }
+
+    public function unRegister(Subject $subject)
+    {
+        $this->strategy->unRegister($subject, $this->sourceTag);
+    }
+
+    public function unRegisterAll()
+    {
+        $this->strategy->unRegisterAll($this->sourceTag);
     }
 }

@@ -5,23 +5,25 @@ namespace Test\Dispatcher;
 use Iguan\Common\Data\JsonDataDecoder;
 use Iguan\Common\Remote\SocketClient;
 use Iguan\Event\Common\CommonAuth;
-use Iguan\Event\Common\RemoteSocketClient;
-use Iguan\Event\Dispatcher\EventDescriptor;
+use Iguan\Event\Common\EventDescriptor;
+use Iguan\Event\Common\Remote\RemoteCommunicateStrategy;
+use Iguan\Event\Common\Remote\RemoteSocketClient;
 use Iguan\Event\Dispatcher\EventDispatcher;
-use Iguan\Event\Dispatcher\Remote\RemoteCommunicateStrategy;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class RemoteDispatchStrategyTest
  * @author Vishnevskiy Kirill
  */
-class RemoteDispatchStrategyTest extends TestCase
+class RemoteCommunicateStrategyTest extends TestCase
 {
     const MODE_ALRIGHT = 1;
 
     const MODE_INVALID_ANSWER = 2;
 
     const MODE_NO_ANSWER = 3;
+
+    /*---------------------------------------------------DISPATCHING---------------------------------------------------*/
 
     public function testComposingEmptyMessage()
     {
@@ -149,4 +151,5 @@ class RemoteDispatchStrategyTest extends TestCase
             proc_terminate($procHandle);
         }
     }
+
 }

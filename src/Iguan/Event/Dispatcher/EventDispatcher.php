@@ -30,6 +30,7 @@ class EventDispatcher
      * @var CommunicateStrategy
      */
     private $strategy;
+    private $sourceTag;
 
     /**
      * EventDispatcher constructor.
@@ -37,9 +38,10 @@ class EventDispatcher
      * @param CommunicateStrategy $strategy define current dispatcher
      *                         a way to emit events.
      */
-    public function __construct(CommunicateStrategy $strategy)
+    public function __construct($sourceTag, CommunicateStrategy $strategy)
     {
         $this->strategy = $strategy;
+        $this->sourceTag = $sourceTag;
     }
 
     /**
@@ -68,6 +70,7 @@ class EventDispatcher
     public final function dispatchDelayed(Event $event, $delay_time_ms)
     {
         $event_descriptor = new EventDescriptor();
+        $event_descriptor->sourceTag = $this->sourceTag;
         $event_descriptor->event = $event->pack()->asArray();
         $event_descriptor->firedAt = $this->getUnixMicrotime();
         $event_descriptor->delay = $delay_time_ms;

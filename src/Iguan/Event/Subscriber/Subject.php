@@ -4,9 +4,8 @@ namespace Iguan\Event\Subscriber;
 
 
 use Iguan\Event\Common\EventDescriptor;
-use Iguan\Event\Event;
 
-abstract class Subject
+class Subject
 {
     private $token;
 
@@ -28,15 +27,10 @@ abstract class Subject
         $this->handlers[] = $closure;
     }
 
-    public function invoke(EventDescriptor $descriptor)
-    {
-        $this->notify($descriptor->raisedEvent);
-    }
-
-    public function notify(Event $event)
+    public function notifyAll(EventDescriptor $descriptor)
     {
         foreach ($this->handlers as $handler) {
-            $handler($event);
+            $handler($descriptor);
         }
     }
 

@@ -71,23 +71,6 @@ class Event
     {
         $this->setPayload($bundle->getPayload());
         $this->setToken($bundle->getToken());
-        $this->setSourceId($bundle->getSourceId());
-    }
-
-    /**
-     * Set source application or domain name identifier.
-     *
-     * @param string $source_id
-     */
-    public function setSourceId($source_id) {
-        $this->bundle->setSourceId($source_id);
-    }
-
-    /**
-     * @return number|string event source identifier
-     */
-    public function getSourceId() {
-        return $this->bundle->getSourceId();
     }
 
     /**

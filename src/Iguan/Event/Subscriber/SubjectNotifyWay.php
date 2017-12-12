@@ -7,14 +7,15 @@ use Iguan\Event\Common\CommonAuth;
 abstract class SubjectNotifyWay
 {
     /**
-     * @return SubjectNotifyInfo
+     * @return SubjectNotifyInfo[]
      */
     public function getInfo()
     {
         $info = new SubjectNotifyInfo();
         $info->type = $this->getNotifyWayType();
         $info->extra = $this->getNotifyWayExtra();
-        return $info;
+        $info->sourceHash = $this->hashCode();
+        return [$info];
     }
 
     public abstract function getIncomingSerializedEvents();
@@ -27,4 +28,11 @@ abstract class SubjectNotifyWay
     public abstract function getNotifyWayType();
 
     public abstract function getNotifyWayExtra();
+
+    public abstract function hashCode();
+
+    public static function cli($script)
+    {
+        return new SubjectCliNotifyWay($script);
+    }
 }

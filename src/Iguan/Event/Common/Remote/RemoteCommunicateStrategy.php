@@ -10,10 +10,7 @@ use Iguan\Common\Remote\SocketStreamException;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Dispatcher\EventDispatchException;
-use Iguan\Event\Event;
-use Iguan\Event\EventBundle;
-use Iguan\Event\Subscriber\AuthException;
-use Iguan\Event\Subscriber\InvalidIncomingData;
+use Iguan\Event\Subscriber\GlobalEventExtractor;
 use Iguan\Event\Subscriber\Subject;
 use Iguan\Event\Subscriber\SubjectNotifier;
 
@@ -27,12 +24,11 @@ use Iguan\Event\Subscriber\SubjectNotifier;
  */
 class RemoteCommunicateStrategy extends CommunicateStrategy
 {
-    private static $WAYS_INCOMING_DESCRIPTORS_CACHE = [];
 
     /**
      * @var RemoteClient
      */
-    private $dispatchClient;
+    private $remoteClient;
 
     /**
      * @var DataEncoder
@@ -59,9 +55,9 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * @param DataDecoder $decoder a decoder to decode received payload data.
      *                    Ensure, that events are received in supported by passed decoding method.
      */
-    public function __construct(RemoteClient $dispatchClient, DataEncoder $encoder = null, DataDecoder $decoder = null)
+    public function __construct(RemoteClient $remoteClient, DataEncoder $encoder = null, DataDecoder $decoder = null)
     {
-        $this->dispatchClient = $dispatchClient;
+        $this->remoteClient = $remoteClient;
 
         if ($encoder === null) {
             $encoder = new JsonDataEncoder();
@@ -115,7 +111,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
 
         try {
             $auth = $this->getAuth();
-            $this->dispatchClient->write($data, $auth);
+            $this->remoteClient->write($data, $auth);
         } catch (SocketStreamException $exception) {
             throw new EventDispatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -135,7 +131,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      */
     private function readAndCheckAnswer($exceptedId)
     {
-        $answer = $this->dispatchClient->read();
+        $answer = $this->remoteClient->read();
         if (empty($answer)) throw new EventDispatchException('Cannot read server response. Event server went away.');
 
         $decoder = new JsonDataDecoder();
@@ -181,10 +177,12 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * events. For receiving events need to subscribe in EventSubscriber.
      *
      * @param Subject $subject to register
+     * @throws \Iguan\Common\Data\JsonException
      */
-    public function register(Subject $subject)
+    public function register(Subject $subject, $sourceTag)
     {
-        // TODO: Implement register() method.
+        $way = $subject->getNotifyWay();
+        $this->doJsonRpcCall('register', [$sourceTag, $way->getInfo()]);
     }
 
     /**
@@ -192,101 +190,46 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * This subject will never receive any invokes.
      *
      * @param Subject $subject to unsubscribe
+     * @param $sourceTag
+     * @throws \Iguan\Common\Data\JsonException
      */
-    public function unRegister(Subject $subject)
+    public function unRegister(Subject $subject, $sourceTag)
     {
-        // TODO: Implement unRegister() method.
+        $way = $subject->getNotifyWay();
+        $this->doJsonRpcCall('unregister', [$sourceTag, $way->getInfo()]);
+    }
+
+    /**
+     * @param $sourceTag
+     * @throws \Iguan\Common\Data\JsonException
+     */
+    public function unRegisterAll($sourceTag)
+    {
+        $this->doJsonRpcCall('unregisterall', [$sourceTag]);
     }
 
     /**
      * @param Subject $subject
+     * @param $sourceTag
+     * @throws \Iguan\Common\Data\EncodeDecodeException
      * @throws \Iguan\Common\Data\JsonException
      */
     public function subscribe(Subject $subject)
     {
         $way = $subject->getNotifyWay();
+        $extractor = $this->getEventExtractor();
+        $eventDescriptors = $extractor->extract($way);
 
-        if (isset(self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)])) {
-            $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)];
-        } else {
-            $auth = $way->getIncomingAuth();
-            if (!$this->getAuth()->equals($auth)) throw new AuthException('Incoming auth does not match with configured value.');
-
-            $serializedData = $way->getIncomingSerializedEvents();
-            if (!empty($serializedData)) {
-                $jsonDecoder = new JsonDataDecoder();
-                $data = $jsonDecoder->decode($serializedData);
-                if (!isset($data->events)) throw new InvalidIncomingData('Incoming events are missed or have incorrect format.');
-
-                $eventDescriptors = $this->parseDescriptors($data->events);
-            } else {
-                $eventDescriptors = [];
-            }
-            self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)] = $eventDescriptors;
-        }
-
-        SubjectNotifier::notifyMatched($subject, $eventDescriptors);
+        $this->getSubjectNotifier()->notifyMatched($subject, $eventDescriptors);
     }
 
-    private function parseDescriptors(array $rawDescriptors)
+    protected function getEventExtractor()
     {
-        $descriptors = [];
-
-        foreach ($rawDescriptors as $rawDescriptor) {
-            $descriptors[] = $this->createDescriptor($rawDescriptor);
-        }
-
-        return $descriptors;
+        return new GlobalEventExtractor($this->getAuth(), $this->decoder);
     }
 
-    private function createDescriptor($rawDescriptor)
+    protected function getSubjectNotifier()
     {
-        $rawDescriptor = $this->decoder->decode($rawDescriptor);
-
-        if (!isset($rawDescriptor->event,
-            $rawDescriptor->event->class,
-            $rawDescriptor->event->token,
-            $rawDescriptor->event->payload,
-            $rawDescriptor->event->sourceId,
-            $rawDescriptor->firedAt,
-            $rawDescriptor->delay,
-            $rawDescriptor->dispatcher
-        )
-        ) throw new InvalidIncomingData('Incoming event descriptor are broken or have invalid format.');
-
-        $eventBundle = $this->createEventBundle($rawDescriptor->event);
-        $eventClass = $eventBundle->getClass();
-
-        /** @var Event $event */
-        $event = new $eventClass();
-        $event->unpack($eventBundle);
-        $descriptor = new EventDescriptor();
-        $descriptor->event = $eventBundle;
-        $descriptor->raisedEvent = $event;
-        $descriptor->delay = $rawDescriptor->delay;
-        $descriptor->dispatcher = $rawDescriptor->dispatcher;
-        $descriptor->firedAt = $rawDescriptor->firedAt;
-        $descriptor->raisedSubjectToken = isset($rawDescriptor->raisedSubjectToken) ? $rawDescriptor->raisedSubjectToken : null;
-
-        //store cycle dependency
-        $event->setPayload($descriptor);
-        return $descriptor;
-    }
-
-    private function createEventBundle($rawEvent)
-    {
-        $eventClass = $rawEvent->class;
-
-        if (!class_exists($eventClass)) {
-            $eventClass = Event::class;
-        }
-
-        $bundle = new EventBundle();
-        $bundle->setClass($eventClass);
-        $bundle->setPayload($rawEvent->payload);
-        $bundle->setSourceId($rawEvent->sourceId);
-        $bundle->setToken($rawEvent->token);
-
-        return $bundle;
+        return new SubjectNotifier();
     }
 }

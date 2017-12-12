@@ -7,4 +7,5 @@ class SubjectNotifyInfo
 {
     public $type;
     public $extra;
+    public $sourceHash;
 }

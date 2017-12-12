@@ -11,49 +11,52 @@ class SubjectNotifier
      * @param Subject $subject
      * @param EventDescriptor[] $descriptors
      */
-    public static function notifyMatched(Subject $subject, array $descriptors)
+    public function notifyMatched(Subject $subject, array $descriptors)
     {
         $subjectToken = $subject->getToken();
 
         foreach ($descriptors as $descriptor) {
             if ($descriptor->raisedEvent === null) continue;
             $isMatched = false;
-
-            if ($descriptor->raisedSubjectToken !== null) {
-                if ($subjectToken === $descriptor->raisedSubjectToken) {
-                    $isMatched = true;
-                }
+            $token = $descriptor->raisedEvent->getToken();
+            if ($subjectToken === $token) {
+                $isMatched = true;
             } else {
-                $token = $descriptor->raisedEvent->getToken();
-                if ($subjectToken === $token) {
-                    $isMatched = true;
-                } else {
-                    $subjectTokenChunks = explode('.', $subjectToken);
-                    $tokenChunks = explode('.', $token);
+                $subjectTokenChunks = explode('.', $subjectToken);
+                $tokenChunks = explode('.', $token);
 
-                    $matchedChunks = 0;
-                    $exceptedChunksCount = count($tokenChunks);
-                    for ($i = 0; $i < $exceptedChunksCount; $i++) {
-                        $tokenChunk = $tokenChunks[$i];
-                        $subjectTokenChunk = $subjectTokenChunks[$i];
-                        if ($subjectTokenChunk === $tokenChunk || $subjectTokenChunk === '*') {
-                            $matchedChunks++;
-                        } else if ($subjectTokenChunk === '#') {
-                            $matchedChunks = $exceptedChunksCount;
-                            break;
-                        } else {
-                            break;
-                        }
+                $matchedChunks = 0;
+                $exceptedChunksCount = count($tokenChunks);
+                $isSuperWildcardFound = false;
+                for ($i = 0; $i < $exceptedChunksCount; $i++) {
+                    if (count($subjectTokenChunks) <= $i) break;
+
+                    $tokenChunk = $tokenChunks[$i];
+                    $subjectTokenChunk = $subjectTokenChunks[$i];
+                    if ($subjectTokenChunk === $tokenChunk || $subjectTokenChunk === '*') {
+                        $matchedChunks++;
+                    } else if ($subjectTokenChunk === '#') {
+                        $isSuperWildcardFound = true;
+                        break;
+                    } else {
+                        break;
                     }
-                    if ($matchedChunks === $exceptedChunksCount) {
-                        $isMatched = true;
-                    }
+                }
+                if ($isSuperWildcardFound || ($matchedChunks === $exceptedChunksCount && $exceptedChunksCount === count($subjectTokenChunks))) {
+                    $isMatched = true;
                 }
             }
 
             if ($isMatched) {
-                $subject->invoke($descriptor);
+                $this->onMatch($subject, $descriptor);
             }
+        }
+    }
+
+    protected function onMatch(Subject $subject, EventDescriptor $descriptor)
+    {
+        if (!$descriptor->raisedEvent->isPrevented()) {
+            $subject->notifyAll($descriptor);
         }
     }
 }
