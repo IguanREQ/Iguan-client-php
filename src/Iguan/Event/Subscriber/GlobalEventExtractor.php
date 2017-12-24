@@ -36,11 +36,12 @@ class GlobalEventExtractor
      */
     public function extract(SubjectNotifyWay $way)
     {
-        if (isset(self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)])) {
-            $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)];
+        $wayClass = get_class($way);
+        if (isset(self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass])) {
+            $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass];
         } else {
             $auth = $way->getIncomingAuth();
-            if ($this->auth !== null && !$this->auth->equals($auth)) {
+            if (!$auth->equals($this->auth)) {
                 throw new AuthException('Incoming auth does not match with configured value.');
             }
 
@@ -56,7 +57,7 @@ class GlobalEventExtractor
             } else {
                 $eventDescriptors = [];
             }
-            self::$WAYS_INCOMING_DESCRIPTORS_CACHE[get_class($way)] = $eventDescriptors;
+            self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass] = $eventDescriptors;
         }
 
         return $eventDescriptors;
@@ -90,12 +91,13 @@ class GlobalEventExtractor
         if (!isset($rawDescriptor->event,
             $rawDescriptor->event->class,
             $rawDescriptor->event->token,
-            $rawDescriptor->event->payload,
+                $rawDescriptor->event->payloadType,
             $rawDescriptor->sourceTag,
             $rawDescriptor->firedAt,
             $rawDescriptor->delay,
             $rawDescriptor->dispatcher
-        )) {
+                //may be 'null'
+            ) || !property_exists($rawDescriptor->event, 'payload')) {
             throw new InvalidIncomingData('Incoming event descriptor are broken or have invalid format.');
         }
 
@@ -106,7 +108,7 @@ class GlobalEventExtractor
         $event = new $eventClass();
         $event->unpack($eventBundle);
         $descriptor = new EventDescriptor();
-        $descriptor->event = $eventBundle;
+        $descriptor->event = $eventBundle->asArray();
         $descriptor->raisedEvent = $event;
         $descriptor->sourceTag = $rawDescriptor->sourceTag;
         $descriptor->delay = $rawDescriptor->delay;
@@ -114,7 +116,7 @@ class GlobalEventExtractor
         $descriptor->firedAt = $rawDescriptor->firedAt;
 
         //store cycle dependency
-        $event->setPayload($descriptor);
+        $event->setDescriptor($descriptor);
         return $descriptor;
     }
 
@@ -128,6 +130,7 @@ class GlobalEventExtractor
 
         $bundle = new EventBundle();
         $bundle->setClass($eventClass);
+        $bundle->setPayloadType($rawEvent->payloadType);
         $bundle->setPayload($rawEvent->payload);
         $bundle->setToken($rawEvent->token);
 

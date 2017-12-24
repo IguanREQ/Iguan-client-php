@@ -3,6 +3,7 @@
 namespace Iguan\Event;
 
 use Iguan\Common\ImmutableException;
+use Iguan\Common\Util\Variable;
 
 /**
  * Class EventBundle
@@ -29,6 +30,8 @@ class EventBundle
      */
     private $payload;
 
+    private $payloadType;
+
     /**
      * @var bool a flag for indication of immutable state
      */
@@ -39,7 +42,8 @@ class EventBundle
      * Attempt to change bundle state will lead
      * to @see ImmutableException
      */
-    public function lock() {
+    public function lock()
+    {
         $this->immutableLock = true;
     }
 
@@ -105,23 +109,49 @@ class EventBundle
     {
         $this->checkImmutable();
         $this->payload = $payload;
+
+        if ($this->getPayloadType() !== Variable::getTrueType($payload)) {
+            $this->payload = Variable::cast($payload, $this->getPayloadType());
+        }
+    }
+
+    /**
+     * @param string $payloadType
+     */
+    public function setPayloadType($payloadType)
+    {
+        $this->checkImmutable();
+        $this->payloadType = $payloadType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayloadType()
+    {
+        if ($this->payloadType !== null) return $this->payloadType;
+        $this->payloadType = Variable::getTrueType($this->getPayload());
+        return $this->payloadType;
     }
 
     /**
      * @return array of private object fields
      */
-    public function asArray() {
+    public function asArray()
+    {
         return [
-          'class' => $this->class,
-          'token' => $this->token,
-            'payload' => $this->payload
+            'class' => $this->getClass(),
+            'token' => $this->getToken(),
+            'payload' => $this->getPayload(),
+            'payloadType' => $this->getPayloadType()
         ];
     }
 
     /**
      * @throws ImmutableException in case if bundle is locked
      */
-    private function checkImmutable() {
+    private function checkImmutable()
+    {
         if ($this->immutableLock) throw new ImmutableException('Changing property of EventBundle directly is unacceptable.');
     }
 }

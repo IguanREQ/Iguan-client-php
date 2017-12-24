@@ -69,6 +69,7 @@ class Event
      */
     public function unpack(EventBundle $bundle)
     {
+        $this->bundle->setPayloadType($bundle->getPayloadType());
         $this->setPayload($bundle->getPayload());
         $this->setToken($bundle->getToken());
     }

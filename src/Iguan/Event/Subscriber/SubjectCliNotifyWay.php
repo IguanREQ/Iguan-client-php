@@ -52,8 +52,8 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
         global $argv;
 
         return new CommonAuth(
-            isset($argv[$this->tokenArgNumber]) ? $argv[$this->tokenArgNumber] : null,
-            isset($argv[$this->tokenNameArgNumber]) ? $argv[$this->tokenNameArgNumber] : null
+            isset($argv[$this->tokenArgNumber]) ? $argv[$this->tokenArgNumber] : '',
+            isset($argv[$this->tokenNameArgNumber]) ? $argv[$this->tokenNameArgNumber] : ''
         );
     }
 

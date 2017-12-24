@@ -111,6 +111,8 @@ class CommonAuth
 
     public function equals(CommonAuth $that)
     {
+        if ($that === null) return false;
+
         return
             $this->type === $that->type &&
             $this->token === $that->token &&
