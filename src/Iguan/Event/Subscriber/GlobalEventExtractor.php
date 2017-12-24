@@ -86,16 +86,16 @@ class GlobalEventExtractor
      */
     private function createDescriptor($rawDescriptor)
     {
-        $rawDescriptor = $this->decoder->decode($rawDescriptor);
+        $rawDescriptor = $this->decoder->decode(stripslashes($rawDescriptor));
 
         if (!isset($rawDescriptor->event,
-            $rawDescriptor->event->class,
-            $rawDescriptor->event->token,
+                $rawDescriptor->event->class,
+                $rawDescriptor->event->token,
                 $rawDescriptor->event->payloadType,
-            $rawDescriptor->sourceTag,
-            $rawDescriptor->firedAt,
-            $rawDescriptor->delay,
-            $rawDescriptor->dispatcher
+                $rawDescriptor->sourceTag,
+                $rawDescriptor->firedAt,
+                $rawDescriptor->delay,
+                $rawDescriptor->dispatcher
                 //may be 'null'
             ) || !property_exists($rawDescriptor->event, 'payload')) {
             throw new InvalidIncomingData('Incoming event descriptor are broken or have invalid format.');
@@ -123,7 +123,6 @@ class GlobalEventExtractor
     private function createEventBundle($rawEvent)
     {
         $eventClass = $rawEvent->class;
-
         if (!class_exists($eventClass)) {
             $eventClass = Event::class;
         }

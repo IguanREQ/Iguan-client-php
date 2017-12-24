@@ -34,7 +34,8 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
     {
         global $argv;
 
-        return isset($argv[$this->eventsArgNumber]) ? $argv[$this->eventsArgNumber] : '';
+        $str = isset($argv[$this->eventsArgNumber]) ? $argv[$this->eventsArgNumber] : '';
+        return $str;
     }
 
     public function getNotifyWayType()

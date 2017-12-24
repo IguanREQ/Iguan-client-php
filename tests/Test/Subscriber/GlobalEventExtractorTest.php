@@ -79,5 +79,8 @@ class GlobalEventExtractorTest extends TestCase
             $this->assertEquals($source->event['token'], $extracted->raisedEvent->getToken());
             $this->assertEquals($source->event['payload'], $extracted->raisedEvent->getPayload());
         }
+
+        $anotherDescriptors = $extractor->extract($cliWay);
+        $this->assertSame($extractedDescriptors, $anotherDescriptors);
     }
 }

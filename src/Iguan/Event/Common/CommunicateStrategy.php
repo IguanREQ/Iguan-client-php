@@ -69,6 +69,8 @@ abstract class CommunicateStrategy
      */
     protected function getAuth()
     {
+        if ($this->auth === null) $this->auth = new CommonAuth();
+
         return $this->auth;
     }
 
