@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 12.12.2017
- * Time: 23:32
- */
-
 namespace Test\Subscriber;
 
 use Iguan\Event\Common\EventDescriptor;
@@ -15,6 +8,11 @@ use Iguan\Event\Subscriber\SubjectCliNotifyWay;
 use Iguan\Event\Subscriber\SubjectNotifier;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class SubjectNotifierTest
+ *
+ * @author Vishnevskiy Kirill
+ */
 class SubjectNotifierTest extends TestCase
 {
     private $testDescriptors = [];

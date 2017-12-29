@@ -41,6 +41,7 @@ class GlobalEventExtractor
             $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass];
         } else {
             $auth = $way->getIncomingAuth();
+
             if (!$auth->equals($this->auth)) {
                 throw new AuthException('Incoming auth does not match with configured value.');
             }
@@ -86,8 +87,8 @@ class GlobalEventExtractor
      */
     private function createDescriptor($rawDescriptor)
     {
-        $rawDescriptor = $this->decoder->decode(stripslashes($rawDescriptor));
-
+        $rawDescriptor = $this->decoder->decode($rawDescriptor);
+        
         if (!isset($rawDescriptor->event,
                 $rawDescriptor->event->class,
                 $rawDescriptor->event->token,

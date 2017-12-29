@@ -20,7 +20,7 @@ class SubjectNotifyCliWayTest extends TestCase
         $pathToScript = '/path//to/script';
         $argPadding = 2;
         $argv[0] = $pathToScript;
-        $argv[$argPadding + 0] = 'events';
+        $argv[$argPadding + 0] = base64_encode('events');
         $argv[$argPadding + 1] = 'token';
         $argv[$argPadding + 2] = 'name';
         $way = new SubjectCliNotifyWay($pathToScript, $argPadding, $argPadding + 1, $argPadding + 2);

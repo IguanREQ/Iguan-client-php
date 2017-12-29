@@ -1,18 +1,18 @@
 <?php
-
-namespace Test\Integrated;
-
-
-use Iguan\Common\Data\JsonDataEncoder;
+namespace Test\Subscriber;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Dispatcher\EventDispatchException;
 use Iguan\Event\Subscriber\Subject;
 
-class CliTestCommunicateStrategy extends CommunicateStrategy
+/**
+ * Class RegisterStubCommunicateStrategy
+ *
+ * @package Test\Subscriber
+ */
+class RegisterStubCommunicateStrategy extends CommunicateStrategy
 {
-
-    private $lastRunOutput = '';
+    private $registerCount = 0;
 
     /**
      * Emit event according to current strategy.
@@ -21,18 +21,10 @@ class CliTestCommunicateStrategy extends CommunicateStrategy
      *                        be passed to recipient.
      *
      * @throws EventDispatchException in case of any dispatch error
-     * @throws \Iguan\Common\Data\JsonException
      */
     public function emitEvent(EventDescriptor $descriptor)
     {
-        $encoder = new JsonDataEncoder();
-        $this->lastRunOutput = shell_exec(
-            'php "' . __DIR__ . '/src/index.php" '
-            . base64_encode($encoder->encode(['events' => [$encoder->encode($descriptor)]]))
-            . ' ' . addslashes($this->getAuth()->getToken())
-            . ' ' . addslashes($this->getAuth()->getTokenName())
-            . ' 2>&1 '
-        );
+        // TODO: Implement emitEvent() method.
     }
 
     /**
@@ -44,7 +36,7 @@ class CliTestCommunicateStrategy extends CommunicateStrategy
      */
     public function register(Subject $subject, $sourceTag)
     {
-        // TODO: Implement register() method.
+        $this->registerCount++;
     }
 
     /**
@@ -71,10 +63,10 @@ class CliTestCommunicateStrategy extends CommunicateStrategy
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getLastRunOutput()
+    public function getRegisterCount()
     {
-        return $this->lastRunOutput;
+        return $this->registerCount;
     }
 }

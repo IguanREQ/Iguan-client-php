@@ -5,6 +5,11 @@ namespace Iguan\Event\Subscriber;
 
 use Iguan\Event\Common\CommonAuth;
 
+/**
+ * Class SubjectCliNotifyWay
+ *
+ * @author Vishnevskiy Kirill
+ */
 class SubjectCliNotifyWay extends SubjectNotifyWay
 {
     const TYPE = 1;
@@ -34,7 +39,7 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
     {
         global $argv;
 
-        $str = isset($argv[$this->eventsArgNumber]) ? $argv[$this->eventsArgNumber] : '';
+        $str = isset($argv[$this->eventsArgNumber]) ? base64_decode($argv[$this->eventsArgNumber]) : '';
         return $str;
     }
 
@@ -60,8 +65,6 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
 
     public function hashCode()
     {
-        global $argv;
-
-        return hash('md5', $argv[0]);
+        return hash('md5', $this->script);
     }
 }

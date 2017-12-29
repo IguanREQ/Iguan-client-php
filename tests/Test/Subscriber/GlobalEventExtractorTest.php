@@ -52,11 +52,11 @@ class GlobalEventExtractorTest extends TestCase
         }
 
         $encoder = new JsonDataEncoder();
-        $argv[1] = $encoder->encode([
+        $argv[1] = base64_encode($encoder->encode([
             'events' => array_map(function ($el) use ($encoder) {
                 return $encoder->encode($el);
             }, $sourceDescriptors)
-        ]);
+        ]));
         $argv[2] = null;
         $argv[3] = null;
 
