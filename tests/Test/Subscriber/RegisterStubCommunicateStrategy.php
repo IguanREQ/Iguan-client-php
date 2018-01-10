@@ -2,7 +2,7 @@
 namespace Test\Subscriber;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
-use Iguan\Event\Dispatcher\EventDispatchException;
+use Iguan\Event\Common\Remote\RpcCallException;
 use Iguan\Event\Subscriber\Subject;
 
 /**
@@ -20,7 +20,7 @@ class RegisterStubCommunicateStrategy extends CommunicateStrategy
      * @param EventDescriptor $descriptor event describer structure that must
      *                        be passed to recipient.
      *
-     * @throws EventDispatchException in case of any dispatch error
+     * @throws RpcCallException in case of any dispatch error
      */
     public function emitEvent(EventDescriptor $descriptor)
     {

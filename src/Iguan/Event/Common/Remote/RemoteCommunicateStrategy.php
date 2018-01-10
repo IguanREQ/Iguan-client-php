@@ -6,17 +6,18 @@ use Iguan\Common\Data\DataDecoder;
 use Iguan\Common\Data\DataEncoder;
 use Iguan\Common\Data\JsonDataDecoder;
 use Iguan\Common\Data\JsonDataEncoder;
+use Iguan\Common\Data\JsonException;
 use Iguan\Common\Remote\SocketStreamException;
+use Iguan\Event\Common\CommunicateException;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
-use Iguan\Event\Dispatcher\EventDispatchException;
 use Iguan\Event\Subscriber\GlobalEventExtractor;
 use Iguan\Event\Subscriber\Subject;
 use Iguan\Event\Subscriber\SubjectNotifier;
 
 /**
  * Class RemoteDispatchStrategy
- * A dispatch strategy, when event server is on remote
+ * A strategy, when event server is on remote
  * host and can be accessible via remote communication
  * using RemoteClient.
  *
@@ -47,7 +48,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
 
     /**
      * RemoteDispatchStrategy constructor.
-     * @param RemoteClient $dispatchClient initialized remote client,
+     * @param RemoteClient $remoteClient initialized remote client,
      *                                 that provide a way to communicate with
      *                             remote event server (via raw socket, http, ...)
      * @param DataEncoder $encoder an encoder to encode payload data.
@@ -76,24 +77,43 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * and encoder.
      * Encoder will be used to encode a PAYLOAD data, i.e. $descriptor.
      * Method will do a preparing data to send using JSON RPC.
-     * If $this->waitForAnswer is set, method also will wait
-     * for server response. It may take a time, if you no need to
-     * strict mode, disable response waiting, it may save a lot time
-     * for dispatching.
      *
      * @param EventDescriptor $descriptor to be emitted.
-     * @throws EventDispatchException in case of communicate error.
-     * @throws \Iguan\Common\Data\JsonException
+     *
+     * @throws CommunicateException in case of communicate error.
      */
     public final function emitEvent(EventDescriptor $descriptor)
     {
-        $this->doJsonRpcCall('fireEvent', [$this->encoder->encode($descriptor)]);
+        $this->doSafeJsonRpcCall('fireEvent', [$this->encoder->encode($descriptor)]);
     }
 
     /**
+     * A wrapper over doJsonRpcCall for preventing bubling raw JsonException.
      * @param $method
      * @param array $params
+     * @throws CommunicateException
+     */
+    private function doSafeJsonRpcCall($method, array $params) {
+        try {
+            $this->doJsonRpcCall($method, $params);
+        } catch (JsonException $e) {
+            throw new CommunicateException('Some error occurred during JSON operations.', $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Method will do a JSON RPC call to remote using current client.
+     *
+     * If $this->waitForAnswer is set, method also will wait
+     * for server response. It may take a time, if you no need to
+     * strict mode, disable response waiting, it may save a lot time
+     * for dispatching, but improve reliability.
+     *
+     * @param string $method be invoking on remote
+     * @param array $params a method signature params
+     *
      * @throws \Iguan\Common\Data\JsonException
+     * @throws RpcCallException if call failed
      */
     private function doJsonRpcCall($method, array $params)
     {
@@ -113,7 +133,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
             $auth = $this->getAuth();
             $this->remoteClient->write($data, $auth);
         } catch (SocketStreamException $exception) {
-            throw new EventDispatchException($exception->getMessage(), $exception->getCode(), $exception);
+            throw new RpcCallException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         if ($this->waitForAnswer) {
@@ -127,21 +147,23 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      *
      * @param string $exceptedId an RPC ID, that must be in server reply.
      * @return mixed server data reply.
+     *
      * @throws \Iguan\Common\Data\JsonException
+     * @throws RpcCallException if aswer validating failed
      */
     private function readAndCheckAnswer($exceptedId)
     {
         $answer = $this->remoteClient->read();
-        if (empty($answer)) throw new EventDispatchException('Cannot read server response. Event server went away.');
+        if (empty($answer)) throw new RpcCallException('Cannot read server response. Event server went away.');
 
         $decoder = new JsonDataDecoder();
         $answer = $decoder->decode($answer);
 
         //-----------------------------------------------------------v - yes, by design
         if ($answer === false || !isset($answer->id) || $answer->id != $exceptedId) {
-            throw new EventDispatchException('Bad server response. Error in JSON RPC format.');
+            throw new RpcCallException('Bad server response. Error in JSON RPC format.');
         } else if (isset($answer->error)) {
-            throw new EventServerException('JSON RPC error: ' . $answer->error);
+            throw new RpcCallException('JSON RPC error: ' . $answer->error);
         }
 
         return isset($answer->data) ? $answer->data : [];
@@ -150,7 +172,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     /**
      * When server answer are extracted and can be handled.
      *
-     * @param $method
+     * @param string $method JSON PRC method name
      * @param mixed $answer server answer in 'data' JSON RPC reply field.
      */
     protected function onAnswerReceived($method, $answer)
@@ -159,9 +181,9 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     }
 
     /**
-     * Set a behavior when an event was written.
+     * Set a behavior when an RPC was executed.
      * If true, strategy will wait for server reply and
-     * also perform answer validation. It can take a lot time.
+     * also perform answer validation. It can take a lot of time.
      * If false, strategy will not read socket reply.
      *
      * @param bool $waitForAnswer
@@ -177,12 +199,14 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * events. For receiving events need to subscribe in EventSubscriber.
      *
      * @param Subject $subject to register
-     * @throws \Iguan\Common\Data\JsonException
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
      */
     public function register(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doJsonRpcCall('register', [$sourceTag, $way->getInfo()]);
+        $this->doSafeJsonRpcCall('register', [$sourceTag, $way->getInfo()]);
     }
 
     /**
@@ -190,29 +214,44 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * This subject will never receive any invokes.
      *
      * @param Subject $subject to unsubscribe
-     * @param $sourceTag
-     * @throws \Iguan\Common\Data\JsonException
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
      */
     public function unRegister(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doJsonRpcCall('unregister', [$sourceTag, $way->getInfo()]);
+        $this->doSafeJsonRpcCall('unregister', [$sourceTag, $way->getInfo()]);
     }
 
     /**
-     * @param $sourceTag
-     * @throws \Iguan\Common\Data\JsonException
+     * Cancel all registrations.
+     *
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
      */
     public function unRegisterAll($sourceTag)
     {
-        $this->doJsonRpcCall('unregisterall', [$sourceTag]);
+        $this->doSafeJsonRpcCall('unregisterall', [$sourceTag]);
     }
 
     /**
-     * @param Subject $subject
-     * @param $sourceTag
+     * Activate passed subject for being notified when
+     * new event arrived.
+     * Subject can be not registered, but, if event is
+     * arrived, it subject will also be notified.
+     * In case of remote communication, subject will be
+     * notified right in subscribe call only once.
+     * Before subscribe call on subscriber, all incoming
+     * data must be initialized.
+     *
+     * @param Subject $subject to activate
+     *
      * @throws \Iguan\Common\Data\EncodeDecodeException
+     *                  if incoming events cannot be decoded using current decoder
      * @throws \Iguan\Common\Data\JsonException
+     *                  if incoming events is in incorrect format
      */
     public function subscribe(Subject $subject)
     {

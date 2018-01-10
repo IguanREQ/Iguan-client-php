@@ -8,6 +8,7 @@ use Iguan\Event\Common\CommonAuth;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Common\Remote\RemoteCommunicateStrategy;
 use Iguan\Event\Common\Remote\RemoteSocketClient;
+use Iguan\Event\Common\Remote\RpcCallException;
 use Iguan\Event\Dispatcher\EventDispatcher;
 use PHPUnit\Framework\TestCase;
 
@@ -116,7 +117,7 @@ class RemoteCommunicateStrategyTest extends TestCase
     }
 
     /**
-     * @expectedException \Iguan\Event\Dispatcher\EventDispatchException
+     * @expectedException \Iguan\Event\Common\Remote\RpcCallException
      * @expectedExceptionMessage Bad server response. Error in JSON RPC format.
      */
     public function testErrorRemoteDispatching()
@@ -134,7 +135,7 @@ class RemoteCommunicateStrategyTest extends TestCase
     }
 
     /**
-     * @expectedException \Iguan\Event\Dispatcher\EventDispatchException
+     * @expectedException \Iguan\Event\Common\Remote\RpcCallException
      * @expectedExceptionMessage Cannot read server response. Event server went away.
      */
     public function testNoAnswerRemoteDispatching()

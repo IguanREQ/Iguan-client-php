@@ -8,6 +8,7 @@
 
 namespace Iguan\Event\Dispatcher;
 
+use Iguan\Event\Common\CommunicateException;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Event;
@@ -30,11 +31,16 @@ class EventDispatcher
      * @var CommunicateStrategy
      */
     private $strategy;
+
+    /**
+     * @var string
+     */
     private $sourceTag;
 
     /**
      * EventDispatcher constructor.
      *
+     * @param string $sourceTag application/script tag
      * @param CommunicateStrategy $strategy define current dispatcher
      *                         a way to emit events.
      */
@@ -50,6 +56,8 @@ class EventDispatcher
      *
      * @param Event $event to be sent to listeners using
      *              current dispatch strategy.
+     *
+     * @throws CommunicateException in case of communicate error.
      */
     public final function dispatch(Event $event)
     {
@@ -66,6 +74,8 @@ class EventDispatcher
      *              current dispatch strategy.
      * @param int $delay_time_ms delay before event will be caught by
      *            listeners.
+     *
+     * @throws CommunicateException in case of communicate error.
      */
     public final function dispatchDelayed(Event $event, $delay_time_ms)
     {
@@ -83,6 +93,8 @@ class EventDispatcher
      * When event packed and prepared for sending to listeners.
      *
      * @param EventDescriptor $event_descriptor event meta data
+     *
+     * @throws CommunicateException in case of communicate error.
      */
     protected function onEventReadyToEmit(EventDescriptor $event_descriptor)
     {

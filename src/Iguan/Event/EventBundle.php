@@ -30,6 +30,7 @@ class EventBundle
      */
     private $payload;
 
+    /** @var string @see Event::setPayloadType($payloadType)*/
     private $payloadType;
 
     /**
@@ -116,6 +117,9 @@ class EventBundle
     }
 
     /**
+     * Set type of stored payload for recovering
+     * right type on other side.
+     *
      * @param string $payloadType
      */
     public function setPayloadType($payloadType)

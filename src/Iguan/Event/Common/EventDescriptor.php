@@ -5,12 +5,14 @@ namespace Iguan\Event\Common;
 use Iguan\Event\Event;
 
 /**
- * Class EventDescriptor
+ * Class EventDescriptor.
+ * A wrapper over raw event instance with some support info.
  *
  * @author Vishnevskiy Kirill
  */
 class EventDescriptor
 {
+    /** @var string application/script tag that raise event */
     public $sourceTag;
 
     /** @var array an event bundle packed into array */
@@ -29,6 +31,6 @@ class EventDescriptor
     /** @var string a dispatcher language identifier */
     public $dispatcher;
 
-    /** @var Event */
+    /** @var Event a deserialized incoming event */
     public $raisedEvent;
 }

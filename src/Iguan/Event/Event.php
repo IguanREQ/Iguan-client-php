@@ -88,7 +88,7 @@ class Event
      *    event.
      * 3. Partial matching with sharp (#).
      *    Unlike wildcard, sharp will replace all
-     *    remains token domain.
+     *    remains token domain on right side.
      *    For example, a token like 'entity.#' means,
      *    that all subscriber for 'entity.attribute.action'
      *    or 'entity.attribute' will receive event.
@@ -147,14 +147,12 @@ class Event
      *
      * @param string $token event token
      * @param mixed $payload event payload data
-     * @param string $sourceId event source identifier
      * @return Event initialized event object that ready to send
      */
-    public static function create($token, $payload, $sourceId = '') {
+    public static function create($token, $payload) {
         $bundle = new EventBundle();
         $bundle->setToken($token);
         $bundle->setPayload($payload);
-        $bundle->setSourceId($sourceId);
         return new static($bundle);
     }
 

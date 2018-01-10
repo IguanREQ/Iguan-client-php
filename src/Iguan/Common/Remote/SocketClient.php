@@ -162,12 +162,12 @@ class SocketClient
         }
 
         $socket = stream_socket_client($this->remoteSocket, $this->socketErrorCode, $this->socketError, $this->timeoutSeconds, $this->socketFlags, $context);
-        stream_set_blocking($socket, true);
-        stream_set_timeout($socket, $this->timeoutSeconds, $this->timeoutMicroseconds);
-
         if ($socket === false) {
             throw new SocketStreamException('Unable to create event socket stream: ' . $this->socketError . ' (' . $this->socketErrorCode . ').');
         }
+
+        stream_set_blocking($socket, true);
+        stream_set_timeout($socket, $this->timeoutSeconds, $this->timeoutMicroseconds);
 
         $this->socketStream = $socket;
 

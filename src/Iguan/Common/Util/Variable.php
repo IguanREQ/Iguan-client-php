@@ -2,16 +2,20 @@
 
 namespace Iguan\Common\Util;
 
-
 use ReflectionObject;
 
 /**
- * Class Variable
+ * Class Variable.
+ * An util class for casting variables between types.
  *
  * @author Vishnevskiy Kirill
  */
 class Variable
 {
+    /**
+     * @param mixed $var be tested for type
+     * @return string type or class of variable
+     */
     public static function getTrueType($var)
     {
         $type = gettype($var);
@@ -19,6 +23,12 @@ class Variable
         return $type;
     }
 
+    /**
+     * @param mixed $var be casted
+     * @param string $type a result of Variable::getTrueType call
+     * @return mixed casted value. If $type was an existing class
+     * method will return an instance of that class.
+     */
     public static function cast($var, $type)
     {
         switch ($type) {

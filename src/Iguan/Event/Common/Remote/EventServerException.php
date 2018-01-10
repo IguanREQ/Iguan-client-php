@@ -2,16 +2,16 @@
 
 namespace Iguan\Event\Common\Remote;
 
-use Iguan\Event\Dispatcher\EventDispatchException;
+use Iguan\Event\Dispatcher\RpcCallException;
 
 /**
  * Class EventServerException
- * Top-level dispatching exceptions, when
+ * Top-level exceptions, when
  * is not possible to do remote communication.
  *
  * @author Vishnevskiy Kirill
  */
-class EventServerException extends EventDispatchException
+class EventServerException extends RpcCallException
 {
 
 }

@@ -1,14 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: viirr
- * Date: 09.11.2017
- * Time: 0:10
- */
 
 namespace Iguan\Common;
 
-
+/**
+ * Class ImmutableException.
+ * When one of immutable objects gets some changes.
+ *
+ * @author Vishnevskiy Kirill
+ */
 class ImmutableException extends \RuntimeException
 {
 

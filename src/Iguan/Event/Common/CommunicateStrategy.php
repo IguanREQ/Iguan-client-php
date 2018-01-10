@@ -2,9 +2,10 @@
 
 namespace Iguan\Event\Common;
 
-use Iguan\Event\Dispatcher\EventDispatchException;
+use Iguan\Event\Dispatcher\RpcCallException;
 use Iguan\Event\Subscriber\Subject;
 use Iguan\Event\Subscriber\SubjectNotifier;
+use PHPUnit\Runner\Exception;
 
 /**
  * Class DispatchStrategy.
@@ -26,7 +27,7 @@ abstract class CommunicateStrategy
      * @param EventDescriptor $descriptor event describer structure that must
      *                        be passed to recipient.
      *
-     * @throws EventDispatchException in case of any dispatch error
+     * @throws CommunicateException if action cannot be performed
      */
     public abstract function emitEvent(EventDescriptor $descriptor);
 
@@ -36,6 +37,9 @@ abstract class CommunicateStrategy
      * events. For receiving events need to subscribe in EventSubscriber.
      *
      * @param Subject $subject to register
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
      */
     public abstract function register(Subject $subject, $sourceTag);
 
@@ -44,13 +48,34 @@ abstract class CommunicateStrategy
      * This subject will never receive any invokes.
      *
      * @param Subject $subject to unsubscribe
-     * @param $sourceTag
-     * @return
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
      */
     public abstract function unRegister(Subject $subject, $sourceTag);
 
+    /**
+     * Cancel all registrations.
+     *
+     * @param string $sourceTag current application/script tag
+     *
+     * @throws CommunicateException if action cannot be performed
+     */
     public abstract function unRegisterAll($sourceTag);
 
+    /**
+     * Activate passed subject for being notified when
+     * new event arrived.
+     * Subject can be not registered, but, if event is
+     * arrived, it subject will also be notified.
+     *
+     * @param Subject $subject to activate
+     * @throws \Iguan\Common\Data\EncodeDecodeException
+     *                  if incoming events cannot be decoded using current decoder
+     * @throws \Iguan\Common\Data\JsonException
+     *                  if incoming events is in incorrect format
+     * @throws CommunicateException if action cannot be performed
+     */
     public abstract function subscribe(Subject $subject);
 
 
@@ -74,6 +99,13 @@ abstract class CommunicateStrategy
         return $this->auth;
     }
 
+    /**
+     * Notify subject, if any of incoming descriptors are matched with
+     * subject rules.
+     *
+     * @param Subject $subject to be notified
+     * @param EventDescriptor[] $descriptors an incoming events
+     */
     protected function notifyMatched(Subject $subject, array $descriptors)
     {
         $this->getNotifier()->notifyMatched($subject, $descriptors);

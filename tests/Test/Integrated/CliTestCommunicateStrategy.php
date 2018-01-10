@@ -6,7 +6,7 @@ namespace Test\Integrated;
 use Iguan\Common\Data\JsonDataEncoder;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
-use Iguan\Event\Dispatcher\EventDispatchException;
+use Iguan\Event\Dispatcher\RpcCallException;
 use Iguan\Event\Subscriber\Subject;
 
 class CliTestCommunicateStrategy extends CommunicateStrategy
@@ -20,7 +20,7 @@ class CliTestCommunicateStrategy extends CommunicateStrategy
      * @param EventDescriptor $descriptor event describer structure that must
      *                        be passed to recipient.
      *
-     * @throws EventDispatchException in case of any dispatch error
+     * @throws RpcCallException in case of any dispatch error
      * @throws \Iguan\Common\Data\JsonException
      */
     public function emitEvent(EventDescriptor $descriptor)

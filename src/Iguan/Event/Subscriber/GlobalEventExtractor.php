@@ -43,7 +43,7 @@ class GlobalEventExtractor
             $auth = $way->getIncomingAuth();
 
             if (!$auth->equals($this->auth)) {
-                throw new AuthException('Incoming auth does not match with configured value.');
+                throw new AuthException('Incoming event auth does not match with configured value.');
             }
 
             $serializedData = $way->getIncomingSerializedEvents();
