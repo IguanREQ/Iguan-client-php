@@ -35,6 +35,13 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
         $this->tokenNameArgNumber = $tokenNameArgNumber;
     }
 
+    /**
+     * Fetch serialized incoming data from globals.
+     * Data will be extracted from CLI argument.
+     * Incoming data must be encoded in base64 format.
+     *
+     * @return string
+     */
     public function getIncomingSerializedEvents()
     {
         global $argv;
@@ -43,16 +50,33 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
         return $str;
     }
 
+    /**
+     * Get a way identifier.
+     *
+     * @return int
+     */
     public function getNotifyWayType()
     {
         return self::TYPE;
     }
 
+    /**
+     * Get a way extra data, i.e. file path or
+     * remote script location.
+     *
+     * @return string
+     */
     public function getNotifyWayExtra()
     {
         return $this->script;
     }
 
+    /**
+     * Fetch auth data from globals.
+     * Auth will be extracted from CLI input arguments.
+     *
+     * @return CommonAuth
+     */
     public function getIncomingAuth()
     {
         global $argv;
@@ -63,6 +87,13 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
         );
     }
 
+    /**
+     * Hash of way instance.
+     * Different ways must returns different ways.
+     * This is MD5 from current script path.
+     *
+     * @return string
+     */
     public function hashCode()
     {
         return hash('md5', $this->script);

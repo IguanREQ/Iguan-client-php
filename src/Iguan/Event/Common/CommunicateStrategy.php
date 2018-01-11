@@ -72,8 +72,6 @@ abstract class CommunicateStrategy
      * @param Subject $subject to activate
      * @throws \Iguan\Common\Data\EncodeDecodeException
      *                  if incoming events cannot be decoded using current decoder
-     * @throws \Iguan\Common\Data\JsonException
-     *                  if incoming events is in incorrect format
      * @throws CommunicateException if action cannot be performed
      */
     public abstract function subscribe(Subject $subject);
@@ -111,7 +109,7 @@ abstract class CommunicateStrategy
         $this->getNotifier()->notifyMatched($subject, $descriptors);
     }
 
-    private function getNotifier()
+    protected function getNotifier()
     {
         if ($this->notifier === null) {
             $this->notifier = new SubjectNotifier();

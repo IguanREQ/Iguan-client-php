@@ -46,6 +46,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      */
     private $waitForAnswer = true;
 
+
     /**
      * RemoteDispatchStrategy constructor.
      * @param RemoteClient $remoteClient initialized remote client,
@@ -250,8 +251,6 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      *
      * @throws \Iguan\Common\Data\EncodeDecodeException
      *                  if incoming events cannot be decoded using current decoder
-     * @throws \Iguan\Common\Data\JsonException
-     *                  if incoming events is in incorrect format
      */
     public function subscribe(Subject $subject)
     {
@@ -259,16 +258,12 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $extractor = $this->getEventExtractor();
         $eventDescriptors = $extractor->extract($way);
 
-        $this->getSubjectNotifier()->notifyMatched($subject, $eventDescriptors);
+        $this->notifyMatched($subject, $eventDescriptors);
     }
 
     protected function getEventExtractor()
     {
+        //can't store in field due to mutable auth
         return new GlobalEventExtractor($this->getAuth(), $this->decoder);
-    }
-
-    protected function getSubjectNotifier()
-    {
-        return new SubjectNotifier();
     }
 }

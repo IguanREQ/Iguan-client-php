@@ -29,6 +29,13 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
         $this->tokenNameHeader = $tokenNameHeader;
     }
 
+    /**
+     * Fetch serialized incoming data from globals.
+     * Data will be extracted from STDIN if 'X-Iguan'
+     * are present.
+     *
+     * @return string
+     */
     public function getIncomingSerializedEvents()
     {
         if (!isset($_SERVER['X-Iguan'])) return '';
@@ -37,6 +44,10 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
     }
 
     /**
+     * Fetch auth data from globals.
+     * Auth will be extracted from incoming headers
+     * using current headers keys.
+     *
      * @return CommonAuth
      */
     public function getIncomingAuth()
@@ -47,16 +58,34 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
         );
     }
 
+    /**
+     * Get a way identifier.
+     *
+     * @return int
+     */
     public function getNotifyWayType()
     {
         return self::TYPE;
     }
 
+    /**
+     * Get a way extra data, i.e. file path or
+     * remote script location.
+     *
+     * @return string
+     */
     public function getNotifyWayExtra()
     {
         return $this->url;
     }
 
+    /**
+     * Hash of way instance.
+     * Different ways must returns different ways.
+     * This is MD5 from current URL.
+     *
+     * @return string
+     */
     public function hashCode()
     {
         return md5($this->url);

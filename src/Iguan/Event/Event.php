@@ -1,6 +1,7 @@
 <?php
 
 namespace Iguan\Event;
+use Iguan\Event\Common\EventDescriptor;
 
 /**
  * Class Event
@@ -30,6 +31,7 @@ class Event
     private $prevented;
 
 
+    /** @var EventDescriptor */
     private $descriptor;
 
 
@@ -157,7 +159,10 @@ class Event
     }
 
     /**
-     * @return mixed
+     * Get a descriptor from which current event
+     * was created.
+     *
+     * @return EventDescriptor
      */
     public function getDescriptor()
     {
@@ -165,7 +170,10 @@ class Event
     }
 
     /**
-     * @param mixed $descriptor
+     * Set a descriptor from which current event
+     * was created.
+     *
+     * @param EventDescriptor $descriptor
      */
     public function setDescriptor($descriptor)
     {

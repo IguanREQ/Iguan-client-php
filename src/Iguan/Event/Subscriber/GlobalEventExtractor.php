@@ -10,6 +10,12 @@ use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Event;
 use Iguan\Event\EventBundle;
 
+/**
+ * Class GlobalEventExtractor.
+ * Extract and create events from global inputs.
+ *
+ * @author Vishnevskiy Kirill
+ */
 class GlobalEventExtractor
 {
     private static $WAYS_INCOMING_DESCRIPTORS_CACHE = [];
@@ -23,6 +29,12 @@ class GlobalEventExtractor
      */
     private $decoder;
 
+    /**
+     * GlobalEventExtractor constructor.
+     *
+     * @param CommonAuth $auth
+     * @param DataDecoder $decoder
+     */
     public function __construct(CommonAuth $auth, DataDecoder $decoder)
     {
         $this->auth = $auth;
@@ -30,13 +42,25 @@ class GlobalEventExtractor
     }
 
     /**
-     * @param SubjectNotifyWay $way
-     * @throws \Iguan\Common\Data\JsonException
-     * @throws \Iguan\Common\Data\EncodeDecodeException
+     * Extract events from globals using
+     * notify way. A way is know how to extract
+     * raw input. Method will decode raw input data
+     * and convert it to the instances of EventDescriptors.
+     * Incoming raw data also will be checked for
+     * matching with current auth data.
+     *
+     * @param SubjectNotifyWay $way a notify way for which need to extract events
+     * @return EventDescriptor[] incoming events for passed way
+     *
+     * @throws \Iguan\Common\Data\EncodeDecodeException if incoming data is incorrect
      */
     public function extract(SubjectNotifyWay $way)
     {
         $wayClass = get_class($way);
+
+        //the same way has SAME input data, so, we can
+        //store it at first time and retrieve data without
+        //context in future
         if (isset(self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass])) {
             $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass];
         } else {
@@ -65,8 +89,11 @@ class GlobalEventExtractor
     }
 
     /**
-     * @param array $rawDescriptors
-     * @return array
+     * Create descriptors from raw serialized input.
+     *
+     * @param string[] $rawDescriptors
+     * @return EventDescriptor[]
+     *
      * @throws \Iguan\Common\Data\EncodeDecodeException
      */
     private function parseDescriptors(array $rawDescriptors)
@@ -81,8 +108,11 @@ class GlobalEventExtractor
     }
 
     /**
-     * @param $rawDescriptor
+     * Create descriptor from raw serialized event.
+     *
+     * @param string $rawDescriptor
      * @return EventDescriptor
+     *
      * @throws \Iguan\Common\Data\EncodeDecodeException
      */
     private function createDescriptor($rawDescriptor)
