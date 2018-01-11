@@ -2,7 +2,6 @@
 
 namespace Iguan\Event\Common\Remote;
 
-use Iguan\Event\Dispatcher\RpcCallException;
 
 /**
  * Class EventServerException

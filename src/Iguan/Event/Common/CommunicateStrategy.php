@@ -2,10 +2,8 @@
 
 namespace Iguan\Event\Common;
 
-use Iguan\Event\Dispatcher\RpcCallException;
 use Iguan\Event\Subscriber\Subject;
 use Iguan\Event\Subscriber\SubjectNotifier;
-use PHPUnit\Runner\Exception;
 
 /**
  * Class DispatchStrategy.

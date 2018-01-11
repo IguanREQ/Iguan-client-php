@@ -13,7 +13,6 @@ use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Subscriber\GlobalEventExtractor;
 use Iguan\Event\Subscriber\Subject;
-use Iguan\Event\Subscriber\SubjectNotifier;
 
 /**
  * Class RemoteDispatchStrategy
@@ -89,7 +88,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     }
 
     /**
-     * A wrapper over doJsonRpcCall for preventing bubling raw JsonException.
+     * A wrapper over doJsonRpcCall for preventing bubbling raw JsonException.
      * @param $method
      * @param array $params
      * @throws CommunicateException
@@ -150,7 +149,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * @return mixed server data reply.
      *
      * @throws \Iguan\Common\Data\JsonException
-     * @throws RpcCallException if aswer validating failed
+     * @throws RpcCallException if answer validating failed
      */
     private function readAndCheckAnswer($exceptedId)
     {

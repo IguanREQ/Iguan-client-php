@@ -87,7 +87,6 @@ class EventSubscriber
      *
      * @param Subject $subject to be activated
      * @throws \Iguan\Common\Data\EncodeDecodeException
-     * @throws \Iguan\Common\Data\JsonException
      * @throws \Iguan\Event\Common\CommunicateException
      */
     public function subscribe(Subject $subject)
