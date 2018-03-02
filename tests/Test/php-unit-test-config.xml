@@ -1,4 +1,35 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<phpunit bootstrap="../vendor/autoload.php">
-
+<phpunit bootstrap="..\..\vendor\autoload.php">
+    <testsuites>
+        <testsuite name="config">
+            <file>Config/BuilderTest.php</file>
+            <file>Config/ConfigTest.php</file>
+        </testsuite>
+        <testsuite name="dispatcher">
+            <file>Dispatcher/RemoteCommunicateStrategyTest.php</file>
+            <file>Dispatcher/RemoteSocketClientTest.php</file>
+        </testsuite>
+        <testsuite name="integrated">
+            <file>Integrated/SubscribeTest.php</file>
+        </testsuite>
+        <testsuite name="subscriber">
+            <file>Subscriber/EventSubscriberTest.php</file>
+            <file>Subscriber/GlobalEventExtractorTest.php</file>
+            <file>Subscriber/SubjectNotifierTest.php</file>
+            <file>Subscriber/SubjectNotifyCliWayTest.php</file>
+            <file>Subscriber/SubjectTest.php</file>
+        </testsuite>
+        <testsuite name="common">
+            <file>EventBundleTest.php</file>
+            <file>EventTest.php</file>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <exclude>
+                <directory suffix=".php">../../vendor</directory>
+            </exclude>
+            <directory suffix=".php">../../.</directory>
+        </whitelist>
+    </filter>
 </phpunit>

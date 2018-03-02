@@ -1,0 +1,32 @@
+common:
+  tag: 'valid_tag'
+  type: 'remote'
+  auth:
+    token: 'token'
+    token_name: 'token_name'
+    class: 'Iguan\Event\Common\CommonAuth'
+  remote:
+    payload_format: 'json'
+    client:
+      socket:
+        protocol: 'tcp'
+        host: 'localhost'
+        port: 11133
+        ssl_cert_path: ''
+        timeout_s: 10
+        timeout_ms: 11
+        persist: true
+        class: 'Test\Config\MySocketClient'
+      class: 'Test\Config\MyRemoteClient'
+    class: 'Test\Config\MyRemoteStrategy'
+    wait_for_answer: true
+subscriber:
+  register_on_subscribe: true
+  class: 'Test\Config\MyEventSubscriber'
+  guard:
+    type : 'file'
+    file:
+      app_version: '0.1'
+      lock_files_location: 'C:/var'
+emitter:
+  class: 'Test\Config\MyEventEmitter'

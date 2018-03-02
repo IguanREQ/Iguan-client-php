@@ -25,7 +25,7 @@ class SubjectNotifyCliWayTest extends TestCase
         $argv[$argPadding + 2] = 'name';
         $way = new SubjectCliNotifyWay($pathToScript, $argPadding, $argPadding + 1, $argPadding + 2);
         $this->assertTrue((new CommonAuth($argv[$argPadding + 1], $argv[$argPadding + 2]))->equals($way->getIncomingAuth()));
-        $this->assertEquals($argv[$argPadding + 0], $way->getIncomingSerializedEvents());
+        $this->assertEquals(base64_decode($argv[$argPadding + 0]), $way->getIncomingSerializedEvents());
 
         $wayInfo = $way->getInfo()[0];
         $this->assertEquals(SubjectCliNotifyWay::TYPE, $wayInfo->type);

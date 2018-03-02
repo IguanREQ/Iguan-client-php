@@ -10,8 +10,6 @@ namespace Iguan\Common\Remote;
  */
 class SocketClient
 {
-    const DEFAULT_REMOTE_PORT = 16986;
-
     private $remoteSocket;
     private $socketStream;
     private $overlapContext;
@@ -30,9 +28,6 @@ class SocketClient
      */
     public function __construct($remoteSocket = null)
     {
-        if ($remoteSocket === null) {
-            $remoteSocket = 'tcp://127.0.0.1:' . self::DEFAULT_REMOTE_PORT;
-        }
         $this->remoteSocket = $remoteSocket;
     }
 

@@ -120,7 +120,6 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $rpcId = uniqid("", true);
 
         $jsonRpcData = [
-            'jsonrpc' => '2.0',
             'method' => $method,
             'id' => $rpcId,
             'params' => $params
@@ -206,7 +205,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     public function register(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doSafeJsonRpcCall('register', [$sourceTag, $way->getInfo()]);
+        $this->doSafeJsonRpcCall('register', [$sourceTag, $this->encoder->encode($way->getInfo())]);
     }
 
     /**
@@ -221,7 +220,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     public function unRegister(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doSafeJsonRpcCall('unregister', [$sourceTag, $way->getInfo()]);
+        $this->doSafeJsonRpcCall('unregister', [$sourceTag, $this->encoder->encode($way->getInfo())]);
     }
 
     /**

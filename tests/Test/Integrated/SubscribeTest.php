@@ -4,7 +4,7 @@ namespace Test\Integrated;
 
 use Iguan\Common\Data\JsonDataDecoder;
 use Iguan\Event\Common\CommonAuth;
-use Iguan\Event\Dispatcher\EventDispatcher;
+use Iguan\Event\Emitter\EventEmitter;
 use Iguan\Event\Subscriber\AuthException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Exception;
@@ -18,10 +18,10 @@ class SubscribeTest extends TestCase
     public function testInvoking()
     {
         $strategy = new CliTestCommunicateStrategy();
-        $dispatcher = new EventDispatcher('tag', $strategy);
+        $dispatcher = new EventEmitter('tag', $strategy);
         $event = new MyEvent();
         $event->setToken("some.event");
-        $event->setPayload(['test' => 'payload']);
+        $event->setPayload(['ConfigTest' => 'payload']);
         $dispatcher->dispatch($event);
         $output = $strategy->getLastRunOutput();
         echo $output;
@@ -34,10 +34,10 @@ class SubscribeTest extends TestCase
     public function testEmptyOut()
     {
         $strategy = new CliTestCommunicateStrategy();
-        $dispatcher = new EventDispatcher('tag', $strategy);
+        $dispatcher = new EventEmitter('tag', $strategy);
         $event = new MyEvent();
         $event->setToken("broken.event");
-        $event->setPayload(['test' => 'payload']);
+        $event->setPayload(['ConfigTest' => 'payload']);
         $dispatcher->dispatch($event);
         $output = $strategy->getLastRunOutput();
 
@@ -48,12 +48,12 @@ class SubscribeTest extends TestCase
     {
         $strategy = new CliTestCommunicateStrategy();
         $strategy->setAuth(new CommonAuth('token'));
-        $dispatcher = new EventDispatcher('tag', $strategy);
+        $dispatcher = new EventEmitter('tag', $strategy);
         $event = new MyEvent();
         $event->setToken("some.event");
-        $event->setPayload(['test' => 'payload']);
+        $event->setPayload(['ConfigTest' => 'payload']);
         $dispatcher->dispatch($event);
         $output = $strategy->getLastRunOutput();
-        $this->assertContains('Uncaught Iguan\Event\Subscriber\AuthException: Incoming auth does not match with configured value.', $output);
+        $this->assertContains('Uncaught Iguan\Event\Subscriber\AuthException: Incoming event auth does not match with configured value.', $output);
     }
 }

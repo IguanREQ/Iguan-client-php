@@ -31,7 +31,7 @@ class RemoteSocketClientTest extends TestCase
 
     public function testWritingEchoReading()
     {
-        $socketClient = new SocketClient();
+        $socketClient = new SocketClient('tcp://127.0.0.1:16986');
         $dataLength = 1024 * 1024;
         $data = openssl_random_pseudo_bytes($dataLength);
         $socketClient->write($data);

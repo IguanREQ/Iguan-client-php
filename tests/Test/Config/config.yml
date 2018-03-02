@@ -1,0 +1,32 @@
+common:
+  tag: 'tag'
+  type: 'remote'
+  auth:
+    token: 'token'
+    token_name: 'token_name'
+    class: 'Iguan\Event\Common\CommonAuth'
+  remote:
+    payload_format: 'json'
+    client:
+      socket:
+        protocol: 'tcp'
+        host: '127.0.0.1'
+        port: 1133
+        ssl_cert_path: ''
+        timeout_s: 2
+        timeout_ms: 0
+        persist: false
+        class: 'Iguan\Common\Remote\SocketClient'
+      class: 'Iguan\Event\Common\Remote\RemoteSocketClient'
+    class: 'Iguan\Event\Common\Remote\RemoteCommunicateStrategy'
+    wait_for_answer: true
+subscriber:
+  register_on_subscribe: true
+  class: 'Iguan\Event\Subscriber\EventSubscriber'
+  guard:
+    type : 'file'
+    file:
+      lock_files_location: '/tmp'
+    class: 'Iguan\Event\Subscriber\Guard\SubscriptionFileGuard'
+emitter:
+  class: 'Iguan\Event\Emitter\EventEmitter'

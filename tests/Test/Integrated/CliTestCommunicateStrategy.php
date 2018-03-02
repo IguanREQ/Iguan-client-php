@@ -6,7 +6,7 @@ namespace Test\Integrated;
 use Iguan\Common\Data\JsonDataEncoder;
 use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
-use Iguan\Event\Dispatcher\RpcCallException;
+use Iguan\Event\Emitter\RpcCallException;
 use Iguan\Event\Subscriber\Subject;
 
 class CliTestCommunicateStrategy extends CommunicateStrategy

@@ -7,7 +7,7 @@ namespace Iguan\Event\Subscriber;
  *
  * @author Vishnevskiy Kirill
  */
-class InvalidIncomingData extends \RuntimeException
+class InvalidIncomingDataException extends \RuntimeException
 {
 
 }

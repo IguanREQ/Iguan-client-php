@@ -1,6 +1,6 @@
 <?php
 
-namespace Iguan\Event\Dispatcher;
+namespace Iguan\Event\Emitter;
 
 use Iguan\Event\Common\CommunicateException;
 use Iguan\Event\Common\CommunicateStrategy;
@@ -14,7 +14,7 @@ use Iguan\Event\Event;
  *
  * @author Vishnevskiy Kirill
  */
-class EventDispatcher
+class EventEmitter
 {
     /**
      * Dispatcher language identifier
@@ -45,7 +45,7 @@ class EventDispatcher
     }
 
     /**
-     * An alias for @see EventDispatcher::dispatchDelayed
+     * An alias for @see EventEmitter::dispatchDelayed
      * with zero delaying.
      *
      * @param Event $event to be sent to listeners using

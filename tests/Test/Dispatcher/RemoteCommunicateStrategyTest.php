@@ -9,7 +9,7 @@ use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Common\Remote\RemoteCommunicateStrategy;
 use Iguan\Event\Common\Remote\RemoteSocketClient;
 use Iguan\Event\Common\Remote\RpcCallException;
-use Iguan\Event\Dispatcher\EventDispatcher;
+use Iguan\Event\Emitter\EventEmitter;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -81,7 +81,7 @@ class RemoteCommunicateStrategyTest extends TestCase
     {
         $eventDescriptor = new EventDescriptor();
         $eventDescriptor->event = ['event' => 'data'];
-        $eventDescriptor->dispatcher = EventDispatcher::DISPATCHER_PHP;
+        $eventDescriptor->dispatcher = EventEmitter::DISPATCHER_PHP;
         $eventDescriptor->delay = 0;
         $eventDescriptor->firedAt = 1984;
 

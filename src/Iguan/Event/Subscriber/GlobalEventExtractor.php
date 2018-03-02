@@ -75,7 +75,7 @@ class GlobalEventExtractor
                 $jsonDecoder = new JsonDataDecoder();
                 $data = $jsonDecoder->decode($serializedData);
                 if (!isset($data->events)) {
-                    throw new InvalidIncomingData('Incoming events are missed or have incorrect format.');
+                    throw new InvalidIncomingDataException('Incoming events are missed or have incorrect format.');
                 }
 
                 $eventDescriptors = $this->parseDescriptors($data->events);
@@ -118,7 +118,7 @@ class GlobalEventExtractor
     private function createDescriptor($rawDescriptor)
     {
         $rawDescriptor = $this->decoder->decode($rawDescriptor);
-        
+
         if (!isset($rawDescriptor->event,
                 $rawDescriptor->event->class,
                 $rawDescriptor->event->token,
@@ -129,7 +129,7 @@ class GlobalEventExtractor
                 $rawDescriptor->dispatcher
                 //may be 'null'
             ) || !property_exists($rawDescriptor->event, 'payload')) {
-            throw new InvalidIncomingData('Incoming event descriptor are broken or have invalid format.');
+            throw new InvalidIncomingDataException('Incoming event descriptor are broken or have invalid format.');
         }
 
         $eventBundle = $this->createEventBundle($rawDescriptor->event);
@@ -154,7 +154,9 @@ class GlobalEventExtractor
     private function createEventBundle($rawEvent)
     {
         $eventClass = $rawEvent->class;
-        if (!class_exists($eventClass)) {
+
+        //check if we have incoming class and given class are subclass of Event::class
+        if (!(class_exists($eventClass) && is_subclass_of($eventClass, Event::class))) {
             $eventClass = Event::class;
         }
 
