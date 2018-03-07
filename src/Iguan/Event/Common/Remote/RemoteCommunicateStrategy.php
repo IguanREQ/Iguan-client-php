@@ -84,7 +84,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      */
     public final function emitEvent(EventDescriptor $descriptor)
     {
-        $this->doSafeJsonRpcCall('fireEvent', [$this->encoder->encode($descriptor)]);
+        $this->doSafeJsonRpcCall('Event.Fire', [$this->encoder->encode($descriptor)]);
     }
 
     /**
@@ -205,7 +205,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     public function register(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doSafeJsonRpcCall('register', [$sourceTag, $this->encoder->encode($way->getInfo())]);
+        $this->doSafeJsonRpcCall('Event.Register', [$sourceTag, $this->encoder->encode($way->getInfo())]);
     }
 
     /**
@@ -220,7 +220,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     public function unRegister(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doSafeJsonRpcCall('unregister', [$sourceTag, $this->encoder->encode($way->getInfo())]);
+        $this->doSafeJsonRpcCall('Event.Unregister', [$sourceTag, $this->encoder->encode($way->getInfo())]);
     }
 
     /**
@@ -232,7 +232,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      */
     public function unRegisterAll($sourceTag)
     {
-        $this->doSafeJsonRpcCall('unregisterall', [$sourceTag]);
+        $this->doSafeJsonRpcCall('Event.UnregisterAll', [$sourceTag]);
     }
 
     /**
