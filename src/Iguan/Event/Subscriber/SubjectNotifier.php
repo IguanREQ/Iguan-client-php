@@ -56,7 +56,7 @@ class SubjectNotifier
                 }
             }
 
-            $token = $descriptor->raisedEvent->getToken();
+            $token = $descriptor->raisedEvent->getName();
             //full match
             if ($subjectToken === $token) {
                 $isMatched = true;

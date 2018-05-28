@@ -73,39 +73,39 @@ class Event
     {
         $this->bundle->setPayloadType($bundle->getPayloadType());
         $this->setPayload($bundle->getPayload());
-        $this->setToken($bundle->getToken());
+        $this->setName($bundle->getName());
     }
 
     /**
-     * Set token to current event.
+     * Set name to current event.
      * @param string $key
-     * A token - is a string, that describe event.
-     * Token can be separated on domains by dot (".")
+     * A name - is a string, that describe event.
+     * Name can be separated on domains by dot (".")
      * Listeners will be notified in case of:
-     * 1. Full matching with excepted token and event token.
+     * 1. Full matching with expected name and event name.
      * 2. Partial matching with wildcards (*).
-     *    Wildcard are can be any of one token domain.
-     *    For example, a token like 'entity.*' means,
+     *    Wildcard are can be any of one name domain.
+     *    For example, a name like 'entity.*' means,
      *    that all subscriber for 'entity.<any_word>' will receive
      *    event.
      * 3. Partial matching with sharp (#).
      *    Unlike wildcard, sharp will replace all
-     *    remains token domain on right side.
-     *    For example, a token like 'entity.#' means,
+     *    remains name domain on right side.
+     *    For example, a name like 'entity.#' means,
      *    that all subscriber for 'entity.attribute.action'
      *    or 'entity.attribute' will receive event.
      */
-    public function setToken($key)
+    public function setName($key)
     {
-        $this->bundle->setToken($key);
+        $this->bundle->setName($key);
     }
 
     /**
-     * @return string a current event token
+     * @return string a current event name
      */
-    public function getToken()
+    public function getName()
     {
-        return $this->bundle->getToken();
+        return $this->bundle->getName();
     }
 
     /**
@@ -131,7 +131,7 @@ class Event
 
     /**
      * Stop event propagation for next event
-     * listeners that applied for current token event.
+     * listeners that applied for current name event.
      */
     public function stopPropagation() {
         $this->prevented = true;
@@ -147,13 +147,14 @@ class Event
     /**
      * Create simple event object from passe data.
      *
-     * @param string $token event token
+     * @param string $name event name
      * @param mixed $payload event payload data
      * @return Event initialized event object that ready to send
      */
-    public static function create($token, $payload) {
+    public static function create($name, $payload)
+    {
         $bundle = new EventBundle();
-        $bundle->setToken($token);
+        $bundle->setName($name);
         $bundle->setPayload($payload);
         return new static($bundle);
     }

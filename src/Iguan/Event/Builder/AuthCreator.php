@@ -13,10 +13,10 @@ use Iguan\Event\Common\CommonAuth;
 class AuthCreator extends Creator
 {
     const EXCEPTED_CONFIG_VALUES = [
-        'token' => [
+        'login' => [
             'types' => ['string']
         ],
-        'token_name' => [
+        'password' => [
             'types' => ['string']
         ],
         'class' => CommonAuth::class
@@ -27,8 +27,8 @@ class AuthCreator extends Creator
      */
     public function create()
     {
-        $token = $this->getExceptedConfigValue('token', '');
-        $token_name = $this->getExceptedConfigValue('token_name', '');
+        $token = $this->getExceptedConfigValue('login', '');
+        $token_name = $this->getExceptedConfigValue('password', '');
         $class = $this->getExceptedConfigValue('class', CommonAuth::class);
 
         return new $class($token, $token_name);

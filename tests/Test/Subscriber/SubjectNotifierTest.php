@@ -26,21 +26,21 @@ class SubjectNotifierTest extends TestCase
         $descriptor = new EventDescriptor();
         $descriptor->id = 1;
         $event = new Event();
-        $event->setToken('event.entity.action');
+        $event->setName('event.entity.action');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
 
         $descriptor = new EventDescriptor();
         $descriptor->id = 2;
         $event = new Event();
-        $event->setToken('domain.event.entity.action');
+        $event->setName('domain.event.entity.action');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
 
         $descriptor = new EventDescriptor();
         $descriptor->id = 3;
         $event = new Event();
-        $event->setToken('domain.entity.action');
+        $event->setName('domain.entity.action');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
 
@@ -48,21 +48,21 @@ class SubjectNotifierTest extends TestCase
         $descriptor->id = 4;
         $event = new Event();
         $event->stopPropagation();
-        $event->setToken('event.entity.stopped');
+        $event->setName('event.entity.stopped');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
 
         $descriptor = new EventDescriptor();
         $descriptor->id = 5;
         $event = new Event();
-        $event->setToken('domain.event');
+        $event->setName('domain.event');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
 
         $descriptor = new EventDescriptor();
         $descriptor->id = 6;
         $event = new Event();
-        $event->setToken('domain.event.entity');
+        $event->setName('domain.event.entity');
         $descriptor->raisedEvent = $event;
         $this->testDescriptors[] = $descriptor;
     }

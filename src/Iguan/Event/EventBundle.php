@@ -21,9 +21,9 @@ class EventBundle
     private $class;
 
     /**
-     * @var string event token. @see Event::setToken($token)
+     * @var string event name. @see Event::setName($name)
      */
-    private $token;
+    private $name;
 
     /**
      * @var mixed event payload data. @see Event::setPayload($payload)
@@ -72,22 +72,22 @@ class EventBundle
     /**
      * @return string a bundle stored event
      */
-    public function getToken()
+    public function getName()
     {
-        return $this->token;
+        return $this->name;
     }
 
     /**
-     * Set event token to bundle.
+     * Set event name to bundle.
      * If bundle is locked - it will raise
      * a @see ImmutableException
      *
-     * @param string $token event token
+     * @param string $name event name
      */
-    public function setToken($token)
+    public function setName($name)
     {
         $this->checkImmutable();
-        $this->token = $token;
+        $this->name = $name;
     }
 
     /**
@@ -145,7 +145,7 @@ class EventBundle
     {
         return [
             'class' => $this->getClass(),
-            'token' => $this->getToken(),
+            'name' => $this->getName(),
             'payload' => $this->getPayload(),
             'payloadType' => $this->getPayloadType()
         ];

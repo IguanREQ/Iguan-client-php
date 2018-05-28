@@ -36,7 +36,7 @@ class BuilderTest extends TestCase
         $this->assertEquals(get_class($validEncoder), get_class($strategy->getEncoder()));
 
         $auth = $strategy->getAuth();
-        $exceptedAuth = new CommonAuth($config->getValue('common.auth.token'), $config->getValue('common.auth.token_name'));
+        $exceptedAuth = new CommonAuth($config->getValue('common.auth.login'), $config->getValue('common.auth.password'));
         $this->assertTrue($exceptedAuth->equals($auth));
 
         /** @var MyRemoteClient $remoteClient */
@@ -51,7 +51,11 @@ class BuilderTest extends TestCase
         $socket = $config->getValue('common.remote.client.socket');
         $this->assertEquals($socket['protocol'] . '://' . $socket['host'] . ':' . $socket['port'], $socketClient->getRemoteSocket());
         $this->assertEquals($socket['persist'], $socketClient->isPersist());
-    }
 
+        /** @var MyVerificator $verificator */
+        $verificator = $strategy->getVerificator();
+        $this->assertEquals(MyVerificator::class, get_class($verificator));
+        $this->assertEquals('test\path', $verificator->getPath());
+    }
 
 }

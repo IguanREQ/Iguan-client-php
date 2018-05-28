@@ -21,18 +21,17 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
     /**
      * @var int
      */
-    private $tokenArgNumber;
+    private $signArgNumber;
     /**
      * @var int
      */
     private $tokenNameArgNumber;
 
-    public function __construct($script, $eventsArgNumber = 1, $tokenArgNumber = 2, $tokenNameArgNumber = 3)
+    public function __construct($script, $eventsArgNumber = 1, $signArgNumber = 2)
     {
         $this->script = $script;
         $this->eventsArgNumber = $eventsArgNumber;
-        $this->tokenArgNumber = $tokenArgNumber;
-        $this->tokenNameArgNumber = $tokenNameArgNumber;
+        $this->signArgNumber = $signArgNumber;
     }
 
     /**
@@ -72,22 +71,6 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
     }
 
     /**
-     * Fetch auth data from globals.
-     * Auth will be extracted from CLI input arguments.
-     *
-     * @return CommonAuth
-     */
-    public function getIncomingAuth()
-    {
-        global $argv;
-
-        return new CommonAuth(
-            isset($argv[$this->tokenArgNumber]) ? $argv[$this->tokenArgNumber] : '',
-            isset($argv[$this->tokenNameArgNumber]) ? $argv[$this->tokenNameArgNumber] : ''
-        );
-    }
-
-    /**
      * Hash of way instance.
      * Different ways must returns different ways.
      * This is MD5 from current script path.
@@ -97,5 +80,27 @@ class SubjectCliNotifyWay extends SubjectNotifyWay
     public function hashCode()
     {
         return hash('md5', $this->script);
+    }
+
+    /**
+     * Get data piece signed by trusted source.
+     *
+     * @return string
+     */
+    public function getSignedContextData()
+    {
+        return __FILE__ . $this->getIncomingSerializedEvents();
+    }
+
+    /**
+     * Get trusted source sign from header
+     *
+     * @return string
+     */
+    public function getSign()
+    {
+        global $argv;
+
+        return isset($argv[$this->signArgNumber]) ? $argv[$this->signArgNumber] : '';
     }
 }

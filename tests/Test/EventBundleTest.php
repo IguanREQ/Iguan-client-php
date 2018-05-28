@@ -18,12 +18,12 @@ class EventBundleTest extends TestCase
     public function testImmutableAfterLock() {
         $bundle = new EventBundle();
         $bundle->lock();
-        $bundle->setToken('Stub!');
+        $bundle->setName('Stub!');
     }
 
     public function testMutableBeforeLock() {
         $bundle = new EventBundle();
-        $bundle->setToken('token');
+        $bundle->setName('token');
         $bundle->setPayload('payload');
         $bundle->setClass('class');
 

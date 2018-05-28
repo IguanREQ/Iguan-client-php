@@ -13,6 +13,8 @@ use Iguan\Event\Common\CommunicateStrategy;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Subscriber\GlobalEventExtractor;
 use Iguan\Event\Subscriber\Subject;
+use Iguan\Event\Subscriber\Verificator\SkipVerificator;
+use Iguan\Event\Subscriber\Verificator\Verificator;
 
 /**
  * Class RemoteDispatchStrategy
@@ -41,9 +43,15 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     private $decoder;
 
     /**
+     * @var Verificator
+     */
+    private $verificator;
+
+    /**
      * @var bool
      */
     private $waitForAnswer = true;
+
 
 
     /**
@@ -84,7 +92,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      */
     public final function emitEvent(EventDescriptor $descriptor)
     {
-        $this->doSafeJsonRpcCall('Event.Fire', [$this->encoder->encode($descriptor)]);
+        $this->doSafeJsonRpcCall('Event.Fire', ['event' => $descriptor]);
     }
 
     /**
@@ -93,7 +101,8 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * @param array $params
      * @throws CommunicateException
      */
-    private function doSafeJsonRpcCall($method, array $params) {
+    private function doSafeJsonRpcCall($method, array $params)
+    {
         try {
             $this->doJsonRpcCall($method, $params);
         } catch (JsonException $e) {
@@ -122,7 +131,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $jsonRpcData = [
             'method' => $method,
             'id' => $rpcId,
-            'params' => $params
+            'params' => [$params]
         ];
 
         $jsonDataEncoder = new JsonDataEncoder();
@@ -205,7 +214,12 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
     public function register(Subject $subject, $sourceTag)
     {
         $way = $subject->getNotifyWay();
-        $this->doSafeJsonRpcCall('Event.Register', [$sourceTag, $this->encoder->encode($way->getInfo())]);
+        $this->doSafeJsonRpcCall('Event.Register', [
+                'sourceTag' => $sourceTag,
+                'eventMask' => $subject->getToken(),
+                'subjects' => $way->getInfo()
+            ]
+        );
     }
 
     /**
@@ -249,6 +263,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      *
      * @throws \Iguan\Common\Data\EncodeDecodeException
      *                  if incoming events cannot be decoded using current decoder
+     * @throws \Iguan\Event\Subscriber\Verificator\InvalidVerificationException
      */
     public function subscribe(Subject $subject)
     {
@@ -259,9 +274,14 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $this->notifyMatched($subject, $eventDescriptors);
     }
 
+    public function setVerificator(Verificator $verificator)
+    {
+        $this->verificator = $verificator;
+    }
+
     protected function getEventExtractor()
     {
-        //can't store in field due to mutable auth
-        return new GlobalEventExtractor($this->getAuth(), $this->decoder);
+        //can't store in field due to mutable verificator
+        return new GlobalEventExtractor($this->decoder, $this->verificator);
     }
 }

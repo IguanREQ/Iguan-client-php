@@ -1,0 +1,29 @@
+common:
+  tag: 'tag'
+  type: 'remote'
+  auth:
+    token: 'token'
+    token_name: 'token_name'
+  remote:
+    payload_format: 'json'
+    client:
+      socket:
+        protocol: 'tcp'
+        host: '10.100.112.186'
+        port: 8081
+        timeout_s: 2
+        timeout_ms: 0
+        persist: false
+    wait_for_answer: true
+    verificator:
+      sign:
+        public_key_path: 'sign_public_key'
+subscriber:
+  register_on_subscribe: true
+  class: 'Iguan\Event\Subscriber\EventSubscriber'
+#  guard:
+#    type : 'file'
+#    file:
+#      lock_files_location: 'C:\var\tmp'
+emitter:
+  class: 'Iguan\Event\Emitter\EventEmitter'

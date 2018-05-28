@@ -12,56 +12,54 @@ namespace Iguan\Event\Common;
 class CommonAuth
 {
     //if there is no auth
-    const AUTH_TYPE_NO_AUTH = 0;
+    const AUTH_TYPE_NO_AUTH = 1;
 
-    //auth by token
-    const AUTH_TYPE_TOKEN = 1;
+    //auth by login (secret)
+    const AUTH_TYPE_LOGIN = 2;
 
-    //auth by token name
-    const AUTH_TYPE_TOKEN_NAME = 2;
+    //auth by password
+    const AUTH_TYPE_PASSWORD = 4;
 
-    const MAX_AUTH_TOKEN_LENGTH = 255;
-    const MAX_AUTH_TOKEN_NAME_LENGTH = 127;
+    const MAX_AUTH_LOGIN_LENGTH = 255;
+    const MAX_AUTH_PASSWORD_LENGTH = 127;
 
     private $type = self::AUTH_TYPE_NO_AUTH;
-    private $token = '';
-    private $tokenName = '';
+    private $login = '';
+    private $password = '';
 
     /**
      *
-     * @param string $token must be not longer MAX_AUTH_TOKEN_LENGTH.
-     *               It's like an exactly access token if $tokenName not
-     *               presented. Otherwise, it can be a password part.
-     * @param string $tokenName a token tag. Can be used as login part.
+     * @param string $login must be not longer MAX_AUTH_LOGIN_LENGTH.
+     * @param string $password a token tag.
      */
-    public function __construct($token = '', $tokenName = '')
+    public function __construct($login = '', $password = '')
     {
-        if (!is_string($token)) {
-            throw new \InvalidArgumentException('Auth token must be string. ' . gettype($token) . ' given.');
+        if (!is_string($login)) {
+            throw new \InvalidArgumentException('Auth login must be string. ' . gettype($login) . ' given.');
         }
 
-        if (!is_string($tokenName)) {
-            throw new \InvalidArgumentException('Auth token name must be string. ' . gettype($token) . ' given.');
+        if (!is_string($password)) {
+            throw new \InvalidArgumentException('Auth password must be string. ' . gettype($login) . ' given.');
         }
 
-        if (strlen($token) > self::MAX_AUTH_TOKEN_LENGTH) {
-            throw new \InvalidArgumentException('Auth token must be <= ' . self::MAX_AUTH_TOKEN_LENGTH . ' bytes. ' . strlen($token) . ' bytes given instead.');
+        if (strlen($login) > self::MAX_AUTH_LOGIN_LENGTH) {
+            throw new \InvalidArgumentException('Auth login be <= ' . self::MAX_AUTH_LOGIN_LENGTH . ' bytes. ' . strlen($login) . ' bytes given instead.');
         }
 
-        if (strlen($tokenName) > self::MAX_AUTH_TOKEN_NAME_LENGTH) {
-            throw new \InvalidArgumentException('Auth token name must be <= ' . self::MAX_AUTH_TOKEN_NAME_LENGTH . ' bytes. ' . strlen($token) . ' bytes given instead.');
+        if (strlen($password) > self::MAX_AUTH_PASSWORD_LENGTH) {
+            throw new \InvalidArgumentException('Auth password must be <= ' . self::MAX_AUTH_PASSWORD_LENGTH . ' bytes. ' . strlen($login) . ' bytes given instead.');
         }
 
-        $isAuthTokenPresent = strlen($token) !== 0;
-        if ($isAuthTokenPresent) {
-            $this->token = $token;
-            $this->type |= self::AUTH_TYPE_TOKEN;
+        $isLoginPresent = strlen($login) !== 0;
+        if ($isLoginPresent) {
+            $this->login = $login;
+            $this->type = self::AUTH_TYPE_LOGIN;
         }
 
-        $isAuthTokenNamePresent = strlen($tokenName) !== 0;
-        if ($isAuthTokenNamePresent) {
-            $this->tokenName = $tokenName;
-            $this->type |= self::AUTH_TYPE_TOKEN_NAME;
+        $isPasswordPresent = strlen($password) !== 0;
+        if ($isPasswordPresent) {
+            $this->password = $password;
+            $this->type |= self::AUTH_TYPE_PASSWORD;
         }
     }
 
@@ -70,7 +68,7 @@ class CommonAuth
      */
     public function isTokenPresent()
     {
-        return ($this->type & self::AUTH_TYPE_TOKEN) > 0;
+        return ($this->type & self::AUTH_TYPE_LOGIN) > 0;
     }
 
     /**
@@ -78,7 +76,7 @@ class CommonAuth
      */
     public function isTokenNamePresent()
     {
-        return ($this->type & self::AUTH_TYPE_TOKEN_NAME) > 0;
+        return ($this->type & self::AUTH_TYPE_PASSWORD) > 0;
     }
 
     /**
@@ -96,17 +94,17 @@ class CommonAuth
     /**
      * @return string current token, if presented. Empty string otherwise.
      */
-    public function getToken()
+    public function getLogin()
     {
-        return $this->token;
+        return $this->login;
     }
 
     /**
      * @return string current token name, if presented. Empty string otherwise.
      */
-    public function getTokenName()
+    public function getPassword()
     {
-        return $this->tokenName;
+        return $this->password;
     }
 
     public function equals(CommonAuth $that)
@@ -115,7 +113,7 @@ class CommonAuth
 
         return
             $this->type === $that->type &&
-            $this->token === $that->token &&
-            $this->tokenName === $that->tokenName;
+            $this->login === $that->login &&
+            $this->password === $that->password;
     }
 }

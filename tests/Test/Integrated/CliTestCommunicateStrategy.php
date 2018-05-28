@@ -29,8 +29,8 @@ class CliTestCommunicateStrategy extends CommunicateStrategy
         $this->lastRunOutput = shell_exec(
             'php "' . __DIR__ . '/src/index.php" '
             . base64_encode($encoder->encode(['events' => [$encoder->encode($descriptor)]]))
-            . ' ' . addslashes($this->getAuth()->getToken())
-            . ' ' . addslashes($this->getAuth()->getTokenName())
+            . ' ' . addslashes($this->getAuth()->getLogin())
+            . ' ' . addslashes($this->getAuth()->getPassword())
             . ' 2>&1 '
         );
     }

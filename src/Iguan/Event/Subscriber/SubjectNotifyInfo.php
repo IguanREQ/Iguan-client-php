@@ -9,7 +9,7 @@ namespace Iguan\Event\Subscriber;
  */
 class SubjectNotifyInfo
 {
-    public $type;
-    public $extra;
+    public $destType;
+    public $destPath;
     public $sourceHash;
 }

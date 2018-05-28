@@ -1,5 +1,8 @@
 <?php
 namespace Iguan\Event\Subscriber;
+
+use Iguan\Common\Data\Base64Decoder;
+use Iguan\Common\Data\Base64Exception;
 use Iguan\Event\Common\CommonAuth;
 
 /**
@@ -11,22 +14,24 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
 {
     const TYPE = 2;
 
-    private $url;
+    /** @var UriPair */
+    private $uriPair;
     /**
      * @var string
      */
-    private $tokenHeader;
+    private $signHeader;
     /**
      * @var string
      */
-    private $tokenNameHeader;
+    private $destHostHeader;
 
-    public function __construct($url, $tokenHeader = 'X-Iguan-Token', $tokenNameHeader = 'X-Iguan-Token-Name')
+    private $eventsInput;
+
+    public function __construct(UriPair $uriPair, $signHeader = 'Iguan-Sign', $destHostHeader = 'Iguan-Dest-Host')
     {
-
-        $this->url = $url;
-        $this->tokenHeader = $tokenHeader;
-        $this->tokenNameHeader = $tokenNameHeader;
+        $this->uriPair = $uriPair;
+        $this->signHeader = $signHeader;
+        $this->destHostHeader = $destHostHeader;
     }
 
     /**
@@ -40,22 +45,11 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
     {
         if (!isset($_SERVER['X-Iguan'])) return '';
 
-        return file_get_contents('php://input');
-    }
+        if ($this->eventsInput === null) {
+            $this->eventsInput = file_get_contents('php://input');
+        }
 
-    /**
-     * Fetch auth data from globals.
-     * Auth will be extracted from incoming headers
-     * using current headers keys.
-     *
-     * @return CommonAuth
-     */
-    public function getIncomingAuth()
-    {
-        return new CommonAuth(
-            isset($_SERVER[$this->tokenHeader]) ? $_SERVER[$this->tokenHeader] : '',
-            isset($_SERVER[$this->tokenNameHeader]) ? $_SERVER[$this->tokenNameHeader] : ''
-        );
+        return $this->eventsInput;
     }
 
     /**
@@ -72,11 +66,11 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
      * Get a way extra data, i.e. file path or
      * remote script location.
      *
-     * @return string
+     * @return UriPair
      */
     public function getNotifyWayExtra()
     {
-        return $this->url;
+        return $this->uriPair;
     }
 
     /**
@@ -88,6 +82,31 @@ class SubjectHttpNotifyWay extends SubjectNotifyWay
      */
     public function hashCode()
     {
-        return md5($this->url);
+        return md5($this->uriPair->fluentPart . $this->uriPair->appPart);
+    }
+
+    /**
+     * Get trusted source sign from header in Base64
+     *
+     * @return string
+     */
+    public function getSign()
+    {
+        try {
+            return (new Base64Decoder())->decode($_SERVER[$this->signHeader]);
+        } catch (Base64Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Get data piece signed by trusted source.
+     * It is Iguan-Dest header followed by body content.
+     *
+     * @return string
+     */
+    public function getSignedContextData()
+    {
+        return $_SERVER[$this->destHostHeader] . $this->getIncomingSerializedEvents();
     }
 }

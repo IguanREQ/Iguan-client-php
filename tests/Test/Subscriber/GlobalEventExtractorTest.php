@@ -9,6 +9,7 @@ use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Event;
 use Iguan\Event\Subscriber\GlobalEventExtractor;
 use Iguan\Event\Subscriber\SubjectCliNotifyWay;
+use Iguan\Event\Subscriber\Verificator\SkipVerificator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -41,7 +42,7 @@ class GlobalEventExtractorTest extends TestCase
         for ($i = 0; $i < 10; $i++) {
             $descriptor = new EventDescriptor();
             $event = new Event();
-            $event->setToken("domain.event.$i");
+            $event->setName("domain.event.$i");
             $event->setPayload(array_key_exists($i, $payloads) ? $payloads[$i] : []);
             $descriptor->event = $event->pack()->asArray();
             $descriptor->sourceTag = "tag_$i";
@@ -60,7 +61,7 @@ class GlobalEventExtractorTest extends TestCase
         $argv[2] = null;
         $argv[3] = null;
 
-        $extractor = new GlobalEventExtractor(new CommonAuth(), new JsonDataDecoder());
+        $extractor = new GlobalEventExtractor(new JsonDataDecoder(), new SkipVerificator());
         $cliWay = new SubjectCliNotifyWay('does not matter');
 
         /** @var EventDescriptor[] $extractedDescriptors */
@@ -76,7 +77,7 @@ class GlobalEventExtractorTest extends TestCase
             $this->assertEquals($source->dispatcher, $extracted->dispatcher);
             $this->assertEquals($source->event, $extracted->event);
             $this->assertEquals($source->event['class'], get_class($extracted->raisedEvent));
-            $this->assertEquals($source->event['token'], $extracted->raisedEvent->getToken());
+            $this->assertEquals($source->event['name'], $extracted->raisedEvent->getName());
             $this->assertEquals($source->event['payload'], $extracted->raisedEvent->getPayload());
         }
 

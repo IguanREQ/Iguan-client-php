@@ -2,13 +2,13 @@
 
 namespace Iguan\Event\Subscriber;
 
-
 use Iguan\Common\Data\DataDecoder;
 use Iguan\Common\Data\JsonDataDecoder;
-use Iguan\Event\Common\CommonAuth;
 use Iguan\Event\Common\EventDescriptor;
 use Iguan\Event\Event;
 use Iguan\Event\EventBundle;
+use Iguan\Event\Subscriber\Verificator\InvalidVerificationException;
+use Iguan\Event\Subscriber\Verificator\Verificator;
 
 /**
  * Class GlobalEventExtractor.
@@ -21,24 +21,24 @@ class GlobalEventExtractor
     private static $WAYS_INCOMING_DESCRIPTORS_CACHE = [];
 
     /**
-     * @var CommonAuth
-     */
-    private $auth;
-    /**
      * @var DataDecoder
      */
     private $decoder;
+    /**
+     * @var Verificator
+     */
+    private $verificator;
 
     /**
      * GlobalEventExtractor constructor.
      *
-     * @param CommonAuth $auth
      * @param DataDecoder $decoder
+     * @param Verificator $verificator
      */
-    public function __construct(CommonAuth $auth, DataDecoder $decoder)
+    public function __construct(DataDecoder $decoder, Verificator $verificator)
     {
-        $this->auth = $auth;
         $this->decoder = $decoder;
+        $this->verificator = $verificator;
     }
 
     /**
@@ -53,6 +53,7 @@ class GlobalEventExtractor
      * @return EventDescriptor[] incoming events for passed way
      *
      * @throws \Iguan\Common\Data\EncodeDecodeException if incoming data is incorrect
+     * @throws InvalidVerificationException
      */
     public function extract(SubjectNotifyWay $way)
     {
@@ -64,10 +65,8 @@ class GlobalEventExtractor
         if (isset(self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass])) {
             $eventDescriptors = self::$WAYS_INCOMING_DESCRIPTORS_CACHE[$wayClass];
         } else {
-            $auth = $way->getIncomingAuth();
-
-            if (!$auth->equals($this->auth)) {
-                throw new AuthException('Incoming event auth does not match with configured value.');
+            if (!$this->verificator->isVerified($way)) {
+                throw new InvalidVerificationException('Incoming event cannot be trusted.');
             }
 
             $serializedData = $way->getIncomingSerializedEvents();
@@ -121,7 +120,7 @@ class GlobalEventExtractor
 
         if (!isset($rawDescriptor->event,
                 $rawDescriptor->event->class,
-                $rawDescriptor->event->token,
+                $rawDescriptor->event->name,
                 $rawDescriptor->event->payloadType,
                 $rawDescriptor->sourceTag,
                 $rawDescriptor->firedAt,
@@ -164,7 +163,7 @@ class GlobalEventExtractor
         $bundle->setClass($eventClass);
         $bundle->setPayloadType($rawEvent->payloadType);
         $bundle->setPayload($rawEvent->payload);
-        $bundle->setToken($rawEvent->token);
+        $bundle->setName($rawEvent->name);
 
         return $bundle;
     }

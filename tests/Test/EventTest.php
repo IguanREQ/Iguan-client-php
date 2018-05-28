@@ -24,9 +24,9 @@ class EventTest extends TestCase
     public function testUnpacking() {
         $event_bundle = new \Iguan\Event\EventBundle();
         $event_bundle->setPayload('payload');
-        $event_bundle->setToken('token');
+        $event_bundle->setName('token');
         $event = new Event($event_bundle);
-        $this->assertEquals($event->getToken(), $event_bundle->getToken(), 'Event token are not the same as in EventBundle.');
+        $this->assertEquals($event->getName(), $event_bundle->getName(), 'Event token are not the same as in EventBundle.');
         $this->assertEquals($event->getPayload(), $event_bundle->getPayload(), 'Event payload are not the same as in EventBundle.');
     }
 

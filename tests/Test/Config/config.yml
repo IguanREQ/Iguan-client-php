@@ -2,8 +2,8 @@ common:
   tag: 'tag'
   type: 'remote'
   auth:
-    token: 'token'
-    token_name: 'token_name'
+    login: 'token'
+    password: 'token_name'
     class: 'Iguan\Event\Common\CommonAuth'
   remote:
     payload_format: 'json'

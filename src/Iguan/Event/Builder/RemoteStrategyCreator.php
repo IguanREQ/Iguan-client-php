@@ -39,6 +39,9 @@ class RemoteStrategyCreator extends Creator
         $strategy = new $class($strategyClient, $dataEncoder, $dataDecoder);
         $strategy->setWaitForAnswer($waitForAnswer);
 
+        $verificator = self::getNextNode($this, RemoteStrategyVerificatorCreator::class, 'verificator')->create();
+        $strategy->setVerificator($verificator);
+
         return $strategy;
     }
 

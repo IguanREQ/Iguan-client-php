@@ -2,8 +2,8 @@ common:
   tag: 'valid_tag'
   type: 'remote'
   auth:
-    token: 'token'
-    token_name: 'token_name'
+    login: 'token'
+    password: 'token_name'
     class: 'Iguan\Event\Common\CommonAuth'
   remote:
     payload_format: 'json'
@@ -20,6 +20,10 @@ common:
       class: 'Test\Config\MyRemoteClient'
     class: 'Test\Config\MyRemoteStrategy'
     wait_for_answer: true
+    verificator:
+      sign:
+        public_key_path: 'test\path'
+      class: 'Test\Config\MyVerificator'
 subscriber:
   register_on_subscribe: true
   class: 'Test\Config\MyEventSubscriber'

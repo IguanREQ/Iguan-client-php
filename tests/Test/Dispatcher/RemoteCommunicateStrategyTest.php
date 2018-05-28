@@ -36,7 +36,7 @@ class RemoteCommunicateStrategyTest extends TestCase
 
         $writtenData = $socket->getWrittenData();
         //no auth, no payload
-        $excepted = pack('C', 0);
+        $excepted = pack('C', 1);
         $this->assertEquals($excepted, substr($writtenData, 0, strlen($excepted)));
     }
 
@@ -47,13 +47,13 @@ class RemoteCommunicateStrategyTest extends TestCase
         $strategy = new RemoteCommunicateStrategy(new RemoteSocketClient($socket), new NoDataEncoder());
         $strategy->setWaitForAnswer(false);
 
-        $token = 'token';
-        $strategy->setAuth(new CommonAuth($token));
+        $login = 'login';
+        $strategy->setAuth(new CommonAuth($login));
 
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
 
-        $excepted = pack('C', CommonAuth::AUTH_TYPE_TOKEN) . pack('C', strlen($token)) . $token;
+        $excepted = pack('C', CommonAuth::AUTH_TYPE_LOGIN) . pack('C', strlen($login)) . $login;
         $this->assertEquals($excepted, substr($writtenData, 0, strlen($excepted)));
     }
 
@@ -71,7 +71,7 @@ class RemoteCommunicateStrategyTest extends TestCase
         $strategy->emitEvent($eventDescriptor);
         $writtenData = $socket->getWrittenData();
 
-        $excepted = pack('C', CommonAuth::AUTH_TYPE_TOKEN | CommonAuth::AUTH_TYPE_TOKEN_NAME)
+        $excepted = pack('C', CommonAuth::AUTH_TYPE_LOGIN | CommonAuth::AUTH_TYPE_PASSWORD)
             . pack('C', strlen($token)) . $token
             . pack('C', strlen($tokenName)) . $tokenName;
         $this->assertEquals($excepted, substr($writtenData, 0, strlen($excepted)));
@@ -95,7 +95,7 @@ class RemoteCommunicateStrategyTest extends TestCase
         $writtenData = substr($writtenData, self::MODE_ALRIGHT);
         $jsonDataDecoder = new JsonDataDecoder();
         $serialData = $jsonDataDecoder->decode($writtenData);
-        $decodedDescriptor = $jsonDataDecoder->decode($serialData->params[0]);
+        $decodedDescriptor = $serialData->params[0]->event;
 
         $this->assertEquals(json_decode(json_encode($eventDescriptor)), $decodedDescriptor);
     }

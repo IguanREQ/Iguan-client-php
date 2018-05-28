@@ -19,6 +19,8 @@ class RemoteSocketClient extends RemoteClient
      */
     private $client;
 
+    private $authSent = false;
+
     public function __construct(SocketClient $client)
     {
         $this->client = $client;
@@ -28,7 +30,7 @@ class RemoteSocketClient extends RemoteClient
      * First byte - auth type byte (bit mask of self::AUTH_TYPE_* const)
      * Next, if has an AUTH_TYPE_TOKEN bit - first byte it's a token size in bytes, next - N bytes of token.
      * Next, if has an AUTH_TYPE_TOKEN_NAME bit - first byte it's a token name size in bytes, next - N bytes of token name.
-     * Next - payload data.
+     * Next - payload data. persistence
      * LF byte at the end required!
      *
      * @param string $payload a data to be written as body
@@ -36,6 +38,27 @@ class RemoteSocketClient extends RemoteClient
      *                   if null - no auth
      */
     public function write($payload, CommonAuth $commonAuth = null)
+    {
+        //auth must be sent only once in first message per connect
+        if (!$this->authSent) {
+            $message = $this->getAuthPreamble($commonAuth);
+            $this->authSent = true;
+        } else {
+            $message = '';
+        }
+
+        $message .= $payload . "\n";
+
+        $this->client->write($message);
+    }
+
+    /**
+     * Add auth bytes.
+     *
+     * @param CommonAuth $commonAuth
+     * @return string auth
+     */
+    private function getAuthPreamble(CommonAuth $commonAuth = null)
     {
         if ($commonAuth !== null) {
             $authType = pack('C', $commonAuth->getType());
@@ -47,19 +70,17 @@ class RemoteSocketClient extends RemoteClient
 
         if ($commonAuth !== null) {
             if ($commonAuth->isTokenPresent()) {
-                $authToken = $commonAuth->getToken();
+                $authToken = $commonAuth->getLogin();
                 $message .= pack('C', strlen($authToken)) . $authToken;
             }
 
             if ($commonAuth->isTokenNamePresent()) {
-                $authTokenName = $commonAuth->getTokenName();
+                $authTokenName = $commonAuth->getPassword();
                 $message .= pack('C', strlen($authTokenName)) . $authTokenName;
             }
         }
 
-        $message .= $payload . "\n";
-
-        $this->client->write($message);
+        return $message;
     }
 
     /**

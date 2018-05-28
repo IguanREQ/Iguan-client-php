@@ -2,8 +2,6 @@
 
 namespace Iguan\Event\Subscriber;
 
-use Iguan\Event\Common\CommonAuth;
-
 /**
  * Class SubjectNotifyWay.
  * Define a way to be notified.
@@ -22,11 +20,25 @@ abstract class SubjectNotifyWay
     public function getInfo()
     {
         $info = new SubjectNotifyInfo();
-        $info->type = $this->getNotifyWayType();
-        $info->extra = $this->getNotifyWayExtra();
+        $info->destType = $this->getNotifyWayType();
+        $info->destPath = $this->getNotifyWayExtra();
         $info->sourceHash = $this->hashCode();
         return [$info];
     }
+
+    /**
+     * Get data piece signed by trusted source
+     *
+     * @return string
+     */
+    public abstract function getSignedContextData();
+
+    /**
+     * Get trusted source sign
+     *
+     * @return string
+     */
+    public abstract function getSign();
 
     /**
      * Fetch serialized incoming data from globals.
@@ -35,12 +47,6 @@ abstract class SubjectNotifyWay
      */
     public abstract function getIncomingSerializedEvents();
 
-    /**
-     * Fetch auth data from globals.
-     *
-     * @return CommonAuth
-     */
-    public abstract function getIncomingAuth();
 
     /**
      * Get a way identifier.
@@ -53,7 +59,7 @@ abstract class SubjectNotifyWay
      * Get a way extra data, i.e. file path or
      * remote script location.
      *
-     * @return string
+     * @return mixed
      */
     public abstract function getNotifyWayExtra();
 

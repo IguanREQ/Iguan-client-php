@@ -103,14 +103,11 @@ class SocketClient
         $zeroWriteMaxTries = 10;
         for ($written = 0; $written < strlen($data); $written += $writeCount) {
             $writeCount = fwrite($socket, substr($data, $written));
-            if ($writeCount === 0 && $zeroWriteTries++ > $zeroWriteMaxTries) {
-                throw new SocketStreamException('Unable to write event to socket stream.');
-            }
-
-            if ($writeCount === false) {
+            if ($writeCount === 0 && $zeroWriteTries++ > $zeroWriteMaxTries || $writeCount === false) {
                 throw new SocketStreamException('Unable to write event to socket stream.');
             }
         }
+        fflush($socket);
     }
 
     /**
