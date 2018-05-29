@@ -16,8 +16,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Iguan": "src/",
-      "Test": "tests/"
+      "Iguan\\": "src/",
+      "Test\\": "tests/"
     }
   },
   "require-dev": {
