@@ -30,13 +30,13 @@ class RemoteStrategyVerificatorCreator extends Creator
      */
     public function create()
     {
-        $class = $this->getExceptedConfigValue('class');
+        $class = $this->getExceptedConfigValue('class', Verificator::class);
         $publicKeyPath = $this->getExceptedConfigValue('sign.public_key_path', '');
-        if (empty($class) && empty($publicKeyPath)) {
+        if ($class === Verificator::class && empty($publicKeyPath)) {
             return new SkipVerificator();
         }
 
-        if (!empty($publicKeyPath) && empty($class)) {
+        if (!empty($publicKeyPath) && $class === Verificator::class) {
             return new SignVerificator($publicKeyPath);
         }
 

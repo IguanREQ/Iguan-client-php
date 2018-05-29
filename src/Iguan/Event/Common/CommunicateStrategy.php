@@ -71,6 +71,8 @@ abstract class CommunicateStrategy
      * @throws \Iguan\Common\Data\EncodeDecodeException
      *                  if incoming events cannot be decoded using current decoder
      * @throws CommunicateException if action cannot be performed
+     * @throws \Iguan\Event\Subscriber\Verificator\InvalidVerificationException
+     *                  if payload cannot be trusted
      */
     public abstract function subscribe(Subject $subject);
 

@@ -18,7 +18,7 @@ use Iguan\Event\Common\EventDescriptor;
 class Subject
 {
     /** @var string */
-    private $token;
+    private $eventName;
 
     /** @var \Closure[] */
     private $handlers = [];
@@ -30,12 +30,12 @@ class Subject
     /**
      * Subject constructor.
      *
-     * @param string $token event token @see Event::setToken comment.
+     * @param string $eventName event name @see Event::setName comment.
      * @param SubjectNotifyWay $way to be notified by
      */
-    public function __construct($token, SubjectNotifyWay $way)
+    public function __construct($eventName, SubjectNotifyWay $way)
     {
-        $this->token = $token;
+        $this->eventName = $eventName;
         $this->way = $way;
     }
 
@@ -70,9 +70,9 @@ class Subject
      *
      * @return string
      */
-    public function getToken()
+    public function getEventName()
     {
-        return $this->token;
+        return $this->eventName;
     }
 
     /**

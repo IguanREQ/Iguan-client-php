@@ -88,6 +88,7 @@ class EventSubscriber
      * @param Subject $subject to be activated
      * @throws \Iguan\Common\Data\EncodeDecodeException
      * @throws \Iguan\Event\Common\CommunicateException
+     * @throws \Iguan\Event\Subscriber\Verificator\InvalidVerificationException
      */
     public function subscribe(Subject $subject)
     {

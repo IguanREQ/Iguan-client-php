@@ -216,7 +216,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $way = $subject->getNotifyWay();
         $this->doSafeJsonRpcCall('Event.Register', [
                 'sourceTag' => $sourceTag,
-                'eventMask' => $subject->getToken(),
+                'eventMask' => $subject->getEventName(),
                 'subjects' => $way->getInfo()
             ]
         );
@@ -264,6 +264,7 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
      * @throws \Iguan\Common\Data\EncodeDecodeException
      *                  if incoming events cannot be decoded using current decoder
      * @throws \Iguan\Event\Subscriber\Verificator\InvalidVerificationException
+     *                  if payload cannot be trusted
      */
     public function subscribe(Subject $subject)
     {

@@ -38,7 +38,7 @@ class SubscriptionFileGuard extends SubscriptionGuard
      */
     public function hasSubscription(Subject $subject, $sourceTag)
     {
-        $lockFile = $this->getLockFilePath($sourceTag, $subject->getToken(), $subject->getNotifyWay()->hashCode());
+        $lockFile = $this->getLockFilePath($sourceTag, $subject->getEventName(), $subject->getNotifyWay()->hashCode());
         return file_exists($lockFile);
     }
 
@@ -53,7 +53,7 @@ class SubscriptionFileGuard extends SubscriptionGuard
      */
     public function persistSubscription(Subject $subject, $sourceTag)
     {
-        $lockFile = $this->getLockFilePath($sourceTag, $subject->getToken(), $subject->getNotifyWay()->hashCode());
+        $lockFile = $this->getLockFilePath($sourceTag, $subject->getEventName(), $subject->getNotifyWay()->hashCode());
         touch($lockFile);
     }
 

@@ -20,6 +20,10 @@ common:
       class: 'Iguan\Event\Common\Remote\RemoteSocketClient'
     class: 'Iguan\Event\Common\Remote\RemoteCommunicateStrategy'
     wait_for_answer: true
+    verificator:
+      sign:
+        public_key_path: 'test\path'
+      class: 'Test\Config\MyVerificator'
 subscriber:
   register_on_subscribe: true
   class: 'Iguan\Event\Subscriber\EventSubscriber'

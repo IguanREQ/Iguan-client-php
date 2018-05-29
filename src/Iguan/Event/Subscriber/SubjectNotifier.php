@@ -40,7 +40,7 @@ class SubjectNotifier
     {
         //TODO reduce method complexity
 
-        $subjectToken = $subject->getToken();
+        $subjectToken = $subject->getEventName();
 
         foreach ($descriptors as $descriptor) {
             if ($descriptor->raisedEvent === null) continue;
