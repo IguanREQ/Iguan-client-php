@@ -1,6 +1,21 @@
 {
+  "name": "IguanREQ/Iguan-client-php",
+  "description": "Client side of IguanREQ for PHP",
+  "version:": "0.9.0",
+  "license": "MIT",
+  "keywords": [
+    "WebHook",
+    "Iguan",
+    "Event"
+  ],
+  "authors": [
+    {
+      "name": "Vishnevskiy Kirill",
+      "email": "viirrtus@gmail.com"
+    }
+  ],
   "autoload": {
-    "psr-0": {
+    "psr-4": {
       "Iguan": "src/",
       "Test": "tests/"
     }
@@ -9,6 +24,7 @@
     "phpunit/phpunit": "^6.5"
   },
   "require": {
+    "php": ">=5.6",
     "mustangostang/spyc": "0.6.2",
     "phpseclib/phpseclib": "~2.0"
   }
