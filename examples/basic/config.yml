@@ -1,0 +1,14 @@
+common:
+  tag: 'Basic Example App'
+  type: 'remote'
+  remote:
+    payload_format: 'json'
+    client:
+      socket:
+        protocol: 'tcp'
+        host: '10.100.112.186'
+        port: 8081
+        timeout_s: 2
+        timeout_ms: 0
+        persist: false
+    wait_for_answer: true

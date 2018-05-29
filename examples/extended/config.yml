@@ -1,0 +1,32 @@
+common:
+  tag: 'Extended Example App'
+  type: 'remote'
+  # now all connection to event server
+  # will contain auth part
+  auth:
+    login: 'John'
+    password: 'LuckyMan'
+  remote:
+    payload_format: 'json'
+    client:
+      socket:
+        protocol: 'tcp'
+        host: '10.100.0.1'
+        port: 8081
+        timeout_s: 2
+        timeout_ms: 0
+        persist: false
+    wait_for_answer: true
+    # each invoking with event payload
+    # will be verified for trusted source
+    verificator:
+      sign:
+        # public_key_path: <set_in_runtime>
+subscriber:
+  # guard prevent multiple subscriptions on
+  # each script invoking
+  guard:
+    type : 'file'
+    file:
+      lock_files_location: '/tmp/event_locks/'
+      # app_version:  <set_in_runtime>
