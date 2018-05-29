@@ -1,5 +1,5 @@
 {
-  "name": "IguanREQ/Iguan-client-php",
+  "name": "iguan-req/iguan-client-php",
   "description": "Client side of IguanREQ for PHP",
   "version:": "0.9.0",
   "license": "MIT",
