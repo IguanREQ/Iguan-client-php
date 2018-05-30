@@ -36,11 +36,11 @@ Auth part: password. Must be from 1 to 127 bytes.
 
 Custom class for auth holding.
  
-**_common.remote.payload_**format_ - `string` - _[json]_ Default: `'json'`
+**_common.remote.payload_format_** - `string` - _[json]_ Default: `'json'`
 
 Define format of payload. Currently, supported by server only JSON.
 
-**_common.remote.wait_**for_answer_ - `boolean` - _[true|false]_ Default: `true`
+**_common.remote.wait_for_answer_** - `boolean` - _[true|false]_ Default: `true`
 
 If `false`, each strategy will no wait for server answer. Useful for non-critical events or when you do not
 want to track status of invoking server methods.
@@ -57,15 +57,15 @@ Host where event server located.
 
 Port where event server listening for client connections.
 
-**_common.remote.client.socket.ssl_**cert_path_ - `string` - _[any]_ Default: `''`
+**_common.remote.client.socket.ssl_cert_path_** - `string` - _[any]_ Default: `''`
 
 Path for SSL/TLS cert for using `tls` or `ssl` protocols.
 
-**_common.remote.client.socket.timeout_**s_ - `int` - _[>=0]_ Default: `2`
+**_common.remote.client.socket.timeout_s_** - `int` - _[>=0]_ Default: `2`
 
 Connection timeout for socket in seconds.
 
-**_common.remote.client.socket.timeout_**ms_ - `int` - _[>=0]_ Default: `0`
+**_common.remote.client.socket.timeout_ms_** - `int` - _[>=0]_ Default: `0`
 
 Additional connection timeout for socket in milliseconds.
 
@@ -86,7 +86,7 @@ and [SocketClient](../src/Iguan/Common/Remote/SocketClient.php) (`common.remote.
 
 Custom class for implementing client-server or local interaction. 
 
-**_common.remote.verificator.sign.public_**key_path_ - `string` - _[any]_ Default: `''`
+**_common.remote.verificator.sign.public_key_path_** - `string` - _[any]_ Default: `''`
 
 Path where public key for sign-verification located.
 
@@ -94,7 +94,7 @@ Path where public key for sign-verification located.
 
 Custom class for verificator implementation. If `common.remote.verificator.sign.public_key_path` presented, default will `SignVerificator::class`
 
-**_subscriber.register_**on_subscribe_ - `boolean` - _[true|false]_ Default: `true`
+**_subscriber.register_on_subscribe_** - `boolean` - _[true|false]_ Default: `true`
 
 If false, subscriber skip [Subject](../src/Iguan/Event/Subscriber/Subject.php) registration on subscribe. In this case, you must 
 register subject by yourself. It is useful to disable when endpoint already have subscriptions from another system/app part.
@@ -107,11 +107,11 @@ Custom class for implementing own emit-subscribe system.
  
 Type for choosing strategy to prevent multiple subscriptions on each script run.
 
-**_subscriber.guard.file.app_**version_ - `string` - _[any]_ Default: `'1.0'`
+**_subscriber.guard.file.app_version_** - `string` - _[any]_ Default: `'1.0'`
  
 Current app version. File guard will revoke subscriptions when version changed. Don't forget to subscribe again.
 
-**_subscriber.guard.file.lock_**files_location_ - `string` - _[any]_ Default: `'/tmp'`
+**_subscriber.guard.file.lock_files_location_** - `string` - _[any]_ Default: `'/tmp'`
  
 Directory where file guard will keep lock files for subscriptions between script calls.
 
@@ -120,3 +120,4 @@ Directory where file guard will keep lock files for subscriptions between script
 Custom class for implementing own emit-subscribe system.
 
 ## Why not DI for classes?
+Performance.
