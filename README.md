@@ -13,7 +13,7 @@ even implement own algorithms, emitters, subscribers very easily.
 Note: before usage, make sure that you have ran an [Iguan-server](https://github.com/IguanREQ/Iguan-server).
 
 ### Docs
-_coming soon_ 
+[Configuration](docs/CONFIG.md)
 
 ### Contribution
 Feel free to PR!
