@@ -80,20 +80,6 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
         $this->decoder = $decoder;
     }
 
-    /**
-     * Emit event descriptor to remote host using current socket
-     * and encoder.
-     * Encoder will be used to encode a PAYLOAD data, i.e. $descriptor.
-     * Method will do a preparing data to send using JSON RPC.
-     *
-     * @param EventDescriptor $descriptor to be emitted.
-     *
-     * @throws CommunicateException in case of communicate error.
-     */
-    public final function emitEvent(EventDescriptor $descriptor)
-    {
-        $this->doSafeJsonRpcCall('Event.Fire', ['event' => $descriptor]);
-    }
 
     /**
      * A wrapper over doJsonRpcCall for preventing bubbling raw JsonException.
@@ -220,6 +206,21 @@ class RemoteCommunicateStrategy extends CommunicateStrategy
                 'subjects' => $way->getInfo()
             ]
         );
+    }
+
+    /**
+     * Emit event descriptor to remote host using current socket
+     * and encoder.
+     * Encoder will be used to encode a PAYLOAD data, i.e. $descriptor.
+     * Method will do a preparing data to send using JSON RPC.
+     *
+     * @param EventDescriptor $descriptor to be emitted.
+     *
+     * @throws CommunicateException in case of communicate error.
+     */
+    public final function emitEvent(EventDescriptor $descriptor)
+    {
+        $this->doSafeJsonRpcCall('Event.Fire', ['event' => $descriptor]);
     }
 
     /**
